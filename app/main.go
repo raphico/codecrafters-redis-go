@@ -37,12 +37,12 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
-	for {
-		reader := bufio.NewReader(conn)
+	reader := bufio.NewReader(conn)
 
+	for {
 		request, err := parseRESPRequest(reader)
 		if err != nil {
-			fmt.Println("Error parsing request: ", err.Error())
+			break
 		}
 
 		command, args := request[0], request[1:]
@@ -50,11 +50,11 @@ func handleConnection(conn net.Conn) {
 		if strings.EqualFold(command, "ECHO") {
 			if len(args) != 1 {
 				fmt.Println("Wrong number of arguments for 'echo' command")
-				return;
+				continue;
 			}
 
 			fmt.Fprintf(conn, "+%s\r\n", args[0])
-			return;
+			continue;
 		}
 
 		conn.Write([]byte("+PONG\r\n"))
