@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
@@ -28,6 +29,11 @@ func main() {
 	}
 
 	for {
+		_, err := bufio.NewReader(conn).ReadString('\n')
+		if err != nil {
+			break
+		}
+
 		conn.Write([]byte("+PONG\r\n"))
 	}
 }
