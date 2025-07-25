@@ -89,11 +89,11 @@ func handleConnection(conn net.Conn) {
 			key := args[0]
 			entry, ok := store[key]
 			if !ok {
-				fmt.Fprint(conn, "-1\r\n")
+				fmt.Fprint(conn, "$-1\r\n")
 				continue
 			} else if entry.isExpired() {
 				delete(store, key)
-				fmt.Fprint(conn, "-1\r\n")
+				fmt.Fprint(conn, "$-1\r\n")
 				continue
 			}
 
