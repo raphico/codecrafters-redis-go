@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -35,11 +38,70 @@ func main() {
 
 func handleConnection(conn net.Conn) {
 	for {
-		_, err := bufio.NewReader(conn).ReadString('\n')
+		reader := bufio.NewReader(conn)
+
+		request, err := parseRESPRequest(reader)
 		if err != nil {
-			break
+			fmt.Println("Error parsing request: ", err.Error())
+		}
+
+		command, args := request[0], request[1:]
+
+		if strings.EqualFold(command, "ECHO") {
+			if len(args) != 1 {
+				fmt.Println("Wrong number of arguments for 'echo' command")
+				return;
+			}
+
+			fmt.Fprintf(conn, "+%s\r\n", args[0])
+			return;
 		}
 
 		conn.Write([]byte("+PONG\r\n"))
 	}
+}
+
+func parseRESPRequest(reader *bufio.Reader) ([]string, error) {
+	line, err := reader.ReadString('\n')
+	if err != nil {
+		return nil, err
+	}
+
+	if !strings.HasPrefix(line, "*") {
+		return nil, fmt.Errorf("expected an array")
+	}
+
+	count, err := strconv.Atoi(strings.TrimSpace(line)[1:])
+	if  err != nil {
+		return nil, err
+	}
+
+	parts := make([]string, 0, count)
+
+	for range count {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, err
+		}
+
+		if !strings.HasPrefix(line, "$") {
+			return nil, fmt.Errorf("expected bulk string")
+		}
+
+		length, err := strconv.Atoi(strings.TrimSpace(line)[1:])
+		if err != nil {
+			return nil, err
+		}
+
+		// +2 for the CRLF
+		buf := make([]byte, length+2)
+		_, err = io.ReadFull(reader, buf)
+		if err != nil {
+			return nil, err
+		}
+
+		parts = append(parts, strings.TrimSpace(string(buf)))
+	}
+
+	return parts, nil
 }
