@@ -13,7 +13,7 @@ import (
 )
 
 type entry struct {
-	value string
+	value      string
 	expiryTime *time.Time
 }
 
@@ -55,7 +55,7 @@ func handleConnection(conn net.Conn) {
 		if strings.EqualFold(command, "ECHO") {
 			if len(args) != 1 {
 				fmt.Fprint(conn, "-ERR wrong number of arguments for 'echo' command\r\n")
-				continue;
+				continue
 			}
 
 			fmt.Fprintf(conn, "+%s\r\n", args[0])
@@ -63,7 +63,7 @@ func handleConnection(conn net.Conn) {
 			if !isSetArgsValid(args) {
 				fmt.Println(3)
 				fmt.Fprint(conn, "-ERR syntax error\r\n")
-				continue;
+				continue
 			}
 
 			key, value := args[0], args[1]
@@ -83,9 +83,9 @@ func handleConnection(conn net.Conn) {
 		} else if strings.EqualFold(command, "GET") {
 			if len(args) != 1 {
 				fmt.Fprint(conn, "ERR wrong number of arguments for 'get' command\r\n")
-				continue;
+				continue
 			}
-			
+
 			key := args[0]
 			entry, ok := store[key]
 			if !ok {
@@ -129,7 +129,7 @@ func isSetArgsValid(args []string) bool {
 		arg := strings.ToUpper(args[i])
 
 		if arg == "PX" {
-			if i + 1 > len(args) {
+			if i+1 > len(args) {
 				return false
 			}
 
@@ -139,7 +139,7 @@ func isSetArgsValid(args []string) bool {
 
 			seenFlags = append(seenFlags, arg)
 
-			if _, err := strconv.Atoi(args[i+1]); err!= nil {
+			if _, err := strconv.Atoi(args[i+1]); err != nil {
 				return false
 			}
 
@@ -163,7 +163,7 @@ func parseRESPRequest(reader *bufio.Reader) ([]string, error) {
 	}
 
 	count, err := strconv.Atoi(strings.TrimSpace(line)[1:])
-	if  err != nil {
+	if err != nil {
 		return nil, err
 	}
 
