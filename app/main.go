@@ -6,11 +6,18 @@ import (
 	"io"
 	"net"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
+	"time"
 )
 
-var store = map[string]string{}
+type entry struct {
+	value string
+	expiryTime *time.Time
+}
+
+var store = map[string]entry{}
 
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -53,31 +60,96 @@ func handleConnection(conn net.Conn) {
 
 			fmt.Fprintf(conn, "+%s\r\n", args[0])
 		} else if strings.EqualFold(command, "SET") {
-			if len(args) != 2 {
+			if !isSetArgsValid(args) {
+				fmt.Println(3)
 				fmt.Fprint(conn, "-ERR syntax error\r\n")
 				continue;
 			}
 
-			store[args[0]] = args[1]
+			key, value := args[0], args[1]
+			if len(args) == 2 {
+				fmt.Println(0)
+				store[key] = entry{value: value, expiryTime: nil}
+				fmt.Fprint(conn, "+OK\r\n")
+				continue
+			}
+
+			// this is already checked in isSetArgsValid
+			ms, _ := strconv.Atoi(args[3])
+			ttl := time.Duration(ms) * time.Millisecond
+			expiry := time.Now().Add(ttl)
+			store[key] = entry{value: value, expiryTime: &expiry}
 			fmt.Fprint(conn, "+OK\r\n")
 		} else if strings.EqualFold(command, "GET") {
 			if len(args) != 1 {
 				fmt.Fprint(conn, "ERR wrong number of arguments for 'get' command\r\n")
 				continue;
 			}
-
-			value, ok := store[args[0]]
+			
+			key := args[0]
+			entry, ok := store[key]
 			if !ok {
+				fmt.Fprint(conn, "-1\r\n")
+				continue
+			} else if entry.isExpired() {
+				delete(store, key)
 				fmt.Fprint(conn, "-1\r\n")
 				continue
 			}
 
-			fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(value), value)
+			fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(entry.value), entry.value)
 		} else {
 			conn.Write([]byte("+PONG\r\n"))
 		}
 
 	}
+}
+
+func (e *entry) isExpired() bool {
+	if e.expiryTime == nil {
+		return false
+	}
+
+	return time.Now().After(*e.expiryTime)
+}
+
+func isSetArgsValid(args []string) bool {
+	if len(args) < 2 {
+		return false
+	}
+
+	if len(args) == 2 {
+		return true
+	}
+
+	seenFlags := args[:2]
+
+	i := 2
+	for i < len(args) {
+		arg := strings.ToUpper(args[i])
+
+		if arg == "PX" {
+			if i + 1 > len(args) {
+				return false
+			}
+
+			if slices.Contains(seenFlags, arg) {
+				return false
+			}
+
+			seenFlags = append(seenFlags, arg)
+
+			if _, err := strconv.Atoi(args[i+1]); err!= nil {
+				return false
+			}
+
+			i += 2
+		} else {
+			return false
+		}
+	}
+
+	return true
 }
 
 func parseRESPRequest(reader *bufio.Reader) ([]string, error) {
