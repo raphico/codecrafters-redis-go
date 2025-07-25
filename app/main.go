@@ -10,9 +10,7 @@ import (
 	"strings"
 )
 
-// Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
-var _ = net.Listen
-var _ = os.Exit
+var store = map[string]string{}
 
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -49,15 +47,36 @@ func handleConnection(conn net.Conn) {
 
 		if strings.EqualFold(command, "ECHO") {
 			if len(args) != 1 {
-				fmt.Println("Wrong number of arguments for 'echo' command")
+				fmt.Fprint(conn, "-ERR wrong number of arguments for 'echo' command\r\n")
 				continue;
 			}
 
 			fmt.Fprintf(conn, "+%s\r\n", args[0])
-			continue;
+		} else if strings.EqualFold(command, "SET") {
+			if len(args) != 2 {
+				fmt.Fprint(conn, "-ERR syntax error\r\n")
+				continue;
+			}
+
+			store[args[0]] = args[1]
+			fmt.Fprint(conn, "+OK\r\n")
+		} else if strings.EqualFold(command, "GET") {
+			if len(args) != 1 {
+				fmt.Fprint(conn, "ERR wrong number of arguments for 'get' command\r\n")
+				continue;
+			}
+
+			value, ok := store[args[0]]
+			if !ok {
+				fmt.Fprint(conn, "-1\r\n")
+				continue
+			}
+
+			fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(value), value)
+		} else {
+			conn.Write([]byte("+PONG\r\n"))
 		}
 
-		conn.Write([]byte("+PONG\r\n"))
 	}
 }
 
