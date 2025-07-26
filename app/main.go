@@ -24,6 +24,6 @@ func main() {
 	err := s.Start()
 	if err != nil {
 		logger.Error(err.Error())
-		return;
+		return
 	}
 }
