@@ -16,7 +16,7 @@ type Server struct {
 	port     string
 	logger   *slog.Logger
 	registry *registry.Registry
-	store *store.Store
+	store    *store.Store
 }
 
 func New(port string, logger *slog.Logger, registry *registry.Registry, store *store.Store) *Server {
@@ -60,9 +60,9 @@ func (s *Server) handleConnection(conn net.Conn) {
 	}()
 
 	reader := bufio.NewReader(conn)
+	session := session.NewSession(conn, s.store)
 
 	for {
-		session := session.NewSession(conn, s.store)
 		request, err := protocol.ParseRequest(reader)
 
 		if err != nil {

@@ -20,7 +20,7 @@ func HandleIncr(s *session.Session, r *protocol.Request) {
 	curr, err := strconv.Atoi(e.Value)
 	if err != nil {
 		s.SendError("value is not an integer or out of range")
-		return;
+		return
 	}
 
 	s.Store.Update(key, strconv.Itoa(curr+1))

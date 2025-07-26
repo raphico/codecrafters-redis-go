@@ -6,5 +6,11 @@ import (
 )
 
 func HandleExec(s *session.Session, r *protocol.Request) {
-	s.SendError("EXEC without MULTI")
+	if !s.TxnContext.InTransaction() {
+		s.SendError("EXEC without MULTI")
+		return
+	}
+
+	s.TxnContext.EndTransaction()
+	s.SendArray()
 }

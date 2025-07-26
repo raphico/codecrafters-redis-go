@@ -6,5 +6,11 @@ import (
 )
 
 func HandleMulti(s *session.Session, r *protocol.Request) {
+	if s.TxnContext.InTransaction() {
+		s.SendError("MULTI calls can not be nested")
+		return
+	}
+
+	s.TxnContext.BeginTransaction()
 	s.SendSimpleString("OK")
 }

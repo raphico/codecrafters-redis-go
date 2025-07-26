@@ -2,28 +2,22 @@ package session
 
 import (
 	"fmt"
-	"math/rand"
 	"net"
-	"time"
 
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 type Session struct {
-	id string
-	conn net.Conn
-	Store *store.Store
-}
-
-func generateSessionId() string {
-    return fmt.Sprintf("client-%d-%d", time.Now().UnixNano(), rand.Intn(1000))
+	conn       net.Conn
+	Store      *store.Store
+	TxnContext *TxnContext
 }
 
 func NewSession(conn net.Conn, store *store.Store) *Session {
 	return &Session{
-		id: generateSessionId(),
-		conn: conn,
-		Store: store,
+		conn:       conn,
+		Store:      store,
+		TxnContext: NewTxnContext(),
 	}
 }
 
@@ -45,4 +39,8 @@ func (s *Session) SendBulkString(reply string) {
 
 func (s *Session) SendInteger(reply int) {
 	fmt.Fprintf(s.conn, ":%d\r\n", reply)
+}
+
+func (s *Session) SendArray() {
+	fmt.Fprint(s.conn, "*0\r\n")
 }
