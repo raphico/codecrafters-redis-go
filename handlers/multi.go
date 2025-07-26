@@ -1,7 +1,10 @@
 package handlers
 
-import "github.com/codecrafters-io/redis-starter-go/protocol"
+import (
+	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/session"
+)
 
-func HandleMulti(w protocol.Response, r *protocol.Request) {
-	w.SendSimpleString("OK")
+func HandleMulti(s *session.Session, r *protocol.Request) {
+	s.SendSimpleString("OK")
 }

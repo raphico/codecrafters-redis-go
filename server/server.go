@@ -8,19 +8,23 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/protocol"
 	"github.com/codecrafters-io/redis-starter-go/registry"
+	"github.com/codecrafters-io/redis-starter-go/session"
+	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 type Server struct {
 	port     string
 	logger   *slog.Logger
 	registry *registry.Registry
+	store *store.Store
 }
 
-func New(port string, logger *slog.Logger, registry *registry.Registry) *Server {
+func New(port string, logger *slog.Logger, registry *registry.Registry, store *store.Store) *Server {
 	return &Server{
 		port,
 		logger,
 		registry,
+		store,
 	}
 }
 
@@ -58,7 +62,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 
 	for {
-		response := protocol.NewResponse(conn)
+		session := session.NewSession(conn, s.store)
 		request, err := protocol.ParseRequest(reader)
 
 		if err != nil {
@@ -67,6 +71,6 @@ func (s *Server) handleConnection(conn net.Conn) {
 
 		s.logger.Debug("received command", "addr", addr, "command", request.Command)
 
-		s.registry.Dispatch(*response, request)
+		s.registry.Dispatch(session, request)
 	}
 }

@@ -7,19 +7,19 @@ import (
 	"time"
 
 	"github.com/codecrafters-io/redis-starter-go/protocol"
-	"github.com/codecrafters-io/redis-starter-go/store"
+	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleSet(w protocol.Response, r *protocol.Request) {
+func HandleSet(s *session.Session, r *protocol.Request) {
 	if !isSetArgsValid(r.Args) {
-		w.SendError("syntax error")
+		s.SendError("syntax error")
 		return
 	}
 
 	key, value := r.Args[0], r.Args[1]
 	if len(r.Args) == 2 {
-		store.MemStore.Set(key, value, nil)
-		w.SendSimpleString("OK")
+		s.Store.Set(key, value, nil)
+		s.SendSimpleString("OK")
 		return
 	}
 
@@ -27,9 +27,9 @@ func HandleSet(w protocol.Response, r *protocol.Request) {
 	ms, _ := strconv.Atoi(r.Args[3])
 	ttl := time.Duration(ms) * time.Millisecond
 
-	store.MemStore.Set(key, value, &ttl)
+	s.Store.Set(key, value, &ttl)
 
-	w.SendSimpleString("OK")
+	s.SendSimpleString("OK")
 }
 
 func isSetArgsValid(args []string) bool {

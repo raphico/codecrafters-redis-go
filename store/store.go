@@ -7,7 +7,10 @@ import (
 
 type Store map[string]Entry
 
-var MemStore = Store{}
+func NewStore() *Store {
+	s := make(Store)
+	return &s
+}
 
 func (s Store) Get(key string) (*Entry, error) {
 	e, ok := s[key]

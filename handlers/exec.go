@@ -1,7 +1,10 @@
 package handlers
 
-import "github.com/codecrafters-io/redis-starter-go/protocol"
+import (
+	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/session"
+)
 
-func HandleExec(w protocol.Response, r *protocol.Request) {
-	w.SendError("EXEC without MULTI")
+func HandleExec(s *session.Session, r *protocol.Request) {
+	s.SendError("EXEC without MULTI")
 }

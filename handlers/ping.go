@@ -2,18 +2,19 @@ package handlers
 
 import (
 	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandlePing(w protocol.Response, r *protocol.Request) {
+func HandlePing(s *session.Session, r *protocol.Request) {
 	if len(r.Args) > 1 {
-		w.SendError("wrong number of arguments for 'ping' command")
+		s.SendError("wrong number of arguments for 'ping' command")
 		return
 	}
 
 	if len(r.Args) == 1 {
 		msg := r.Args[0]
-		w.SendSimpleString(msg)
+		s.SendSimpleString(msg)
 	}
 
-	w.SendSimpleString("PONG")
+	s.SendSimpleString("PONG")
 }

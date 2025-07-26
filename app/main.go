@@ -7,12 +7,17 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/handlers"
 	"github.com/codecrafters-io/redis-starter-go/registry"
 	"github.com/codecrafters-io/redis-starter-go/server"
+	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 const port = "6379"
 
 func main() {
 	registry := registry.New()
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	store := store.NewStore()
+	s := server.New(port, logger, registry, store)
+
 	registry.Add("SET", handlers.HandleSet)
 	registry.Add("GET", handlers.HandleGet)
 	registry.Add("ECHO", handlers.HandleEcho)
@@ -20,9 +25,6 @@ func main() {
 	registry.Add("INCR", handlers.HandleIncr)
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.HandleExec)
-
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	s := server.New(port, logger, registry)
 
 	err := s.Start()
 	if err != nil {

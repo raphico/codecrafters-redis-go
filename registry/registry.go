@@ -4,9 +4,10 @@ import (
 	"strings"
 
 	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-type Handler func(w protocol.Response, r *protocol.Request)
+type Handler func(s *session.Session, r *protocol.Request)
 
 type Registry struct {
 	handlers map[string]Handler
@@ -26,12 +27,12 @@ func (reg *Registry) Add(command string, handler Handler) {
 	reg.handlers[canonical(command)] = handler
 }
 
-func (reg *Registry) Dispatch(w protocol.Response, r *protocol.Request) {
+func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 	handler, ok := reg.handlers[canonical(r.Command)]
 	if !ok {
-		w.SendError("unknown command '" + r.Command + "'")
+		s.SendError("unknown command '" + r.Command + "'")
 		return
 	}
 
-	handler(w, r)
+	handler(s, r)
 }
