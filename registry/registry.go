@@ -37,7 +37,7 @@ func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 		return
 	}
 
-	if s.TxnContext.InTransaction() {
+	if s.TxnContext.InTransaction() && canonical(r.Command) != "exec" {
 		s.TxnContext.QueueCommand(r.Command, r.Args)
 		s.SendSimpleString("QUEUED")
 		return
