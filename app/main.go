@@ -18,6 +18,7 @@ func main() {
 	registry.Add("ECHO", handlers.HandleEcho)
 	registry.Add("PING", handlers.HandlePing)
 	registry.Add("INCR", handlers.HandleIncr)
+	registry.Add("MULTI", handlers.HandleMulti)
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	s := server.New(port, logger, registry)
