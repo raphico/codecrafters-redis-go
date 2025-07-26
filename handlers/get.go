@@ -19,11 +19,5 @@ func HandleGet(s *session.Session, r *protocol.Request) {
 		return
 	}
 
-	if entry.IsExpired() {
-		s.Store.Delete(key)
-		s.SendNullBulkString()
-		return
-	}
-
 	s.SendBulkString(entry.Value)
 }
