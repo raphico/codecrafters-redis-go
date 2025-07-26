@@ -13,8 +13,8 @@ func HandleGet(w protocol.Response, r *protocol.Request) {
 
 	key := r.Args[0]
 
-	entry, ok := store.MemStore.Get(key)
-	if !ok {
+	entry, err := store.MemStore.Get(key)
+	if err != nil {
 		w.SendNullBulkString()
 		return
 	}

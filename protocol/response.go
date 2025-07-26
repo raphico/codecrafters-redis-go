@@ -28,3 +28,7 @@ func (r *Response) SendNullBulkString() {
 func (r *Response) SendBulkString(reply string) {
 	fmt.Fprintf(r.conn, "$%d\r\n%s\r\n", len(reply), reply)
 }
+
+func (r *Response) SendInteger(reply int) {
+	fmt.Fprintf(r.conn, ":%d\r\n", reply)
+}
