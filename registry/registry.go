@@ -31,6 +31,15 @@ func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 	handler, ok := reg.handlers[canonical(r.Command)]
 	if !ok {
 		s.SendError("unknown command '" + r.Command + "'")
+		if s.TxnContext.InTransaction() {
+			s.TxnContext.MarkDirty()
+		}
+		return
+	}
+
+	if s.TxnContext.InTransaction() {
+		s.TxnContext.QueueCommand(r.Command, r.Args)
+		s.SendSimpleString("QUEUED")
 		return
 	}
 
