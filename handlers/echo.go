@@ -11,5 +11,5 @@ func HandleEcho(s *session.Session, r *protocol.Request) protocol.Response {
 	}
 
 	msg := r.Args[0]
-	return protocol.NewErrorResponse(msg)
+	return protocol.NewSimpleStringResponse(msg)
 }
