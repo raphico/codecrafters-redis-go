@@ -13,6 +13,6 @@ func HandlePSYNC(s *session.Session, r *protocol.Request) protocol.Response {
 	}
 
 	info := s.Repl.View.Snapshot()
-	resp := fmt.Sprintf("FULLRESYNC <%s> %d", info.MasterReplID, info.MasterOffset)
+	resp := fmt.Sprintf("FULLRESYNC %s %d", info.MasterReplID, info.MasterOffset)
 	return protocol.NewSimpleStringResponse(resp)
 }
