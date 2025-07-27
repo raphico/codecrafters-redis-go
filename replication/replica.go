@@ -22,7 +22,7 @@ func NewReplica(config config.ReplicaConfig) *Replica {
 	}
 }
 
-func (r *Replica) Handshake(logger *slog.Logger) {
+func (r *Replica) Handshake(logger *slog.Logger, listeningPort int) {
 	addr := net.JoinHostPort(r.masterHost, fmt.Sprint(r.masterPort))
 
 	logger.Info(fmt.Sprintf("Connecting to MASTER %s", addr))
@@ -54,7 +54,7 @@ func (r *Replica) Handshake(logger *slog.Logger) {
 	// 2. REPLCONF listening-port
 	cmd := protocol.NewBulkStringResponse("REPLCONF")
 	arg := protocol.NewBulkStringResponse("listening-port")
-	port := protocol.NewBulkStringResponse(fmt.Sprint(r.masterPort))
+	port := protocol.NewBulkStringResponse(fmt.Sprint(listeningPort))
 	msg = []protocol.Response{cmd, arg, port}
 
 	_, err = fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
