@@ -12,8 +12,13 @@ func HandleGet(s *session.Session, r *protocol.Request) protocol.Response {
 
 	key := r.Args[0]
 
-	entry, err := s.Store.Get(key)
+	entry, expired, err := s.Store.Get(key)
 	if err != nil {
+		return protocol.NewNullBulkStringResponse()
+	}
+
+	if expired {
+		s.Store.Delete(key)
 		return protocol.NewNullBulkStringResponse()
 	}
 

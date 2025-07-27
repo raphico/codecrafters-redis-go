@@ -19,22 +19,21 @@ func NewStore() *Store {
 	}
 }
 
-func (s *Store) Get(key string) (*Entry, error) {
+func (s *Store) Get(key string) (*Entry, bool, error) {
 	// allows multiple readers at the same time, but blocks if a writer is currently modifying
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	e, ok := s.data[key]
 	if !ok {
-		return nil, fmt.Errorf("key '%s' does not exist", key)
+		return nil, false, fmt.Errorf("key '%s' does not exist", key)
 	}
 
 	if e.IsExpired() {
-		s.Delete(key)
-		return nil, fmt.Errorf("key '%s' has expired", key)
+		return nil, true, nil
 	}
 
-	return &e, nil
+	return &e, false, nil
 }
 
 func (s *Store) Set(key, value string, ttl *time.Duration) {

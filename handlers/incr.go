@@ -10,8 +10,8 @@ import (
 func HandleIncr(s *session.Session, r *protocol.Request) protocol.Response {
 	key := r.Args[0]
 
-	e, err := s.Store.Get(key)
-	if err != nil {
+	e, expired, err := s.Store.Get(key)
+	if err != nil || expired {
 		s.Store.Set(key, "1", nil)
 		return protocol.NewIntegerResponse(1)
 	}
