@@ -1,33 +1,97 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/3df784d6-7d4c-4824-9dfc-cd3647bffedf)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# 🧠 Build Your Own Redis in Go (from Scratch)
 
-This is a starting point for Go solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
+A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, replication, and persistence.
 
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
+> 🚀 Zero dependencies. Just Go, sockets, and deep protocol understanding.
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+## 🎯 Goals
 
-# Passing the first stage
+- Understand and implement the Redis protocol (RESP)
+- Build a robust, concurrent TCP server from scratch
+- Reproduce core Redis functionality (PING, ECHO, SET, GET, INCR, etc.)
+- Handle complex features like transactions, replication, and RDB persistence
+- Strengthen skills in concurrency, systems design, and Go internals
 
-The entry point for your Redis implementation is in `app/main.go`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+## Implemented Features
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+### Core Commands
+
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `PING`            | Returns `PONG` or a custom message   |
+| `ECHO <msg>`      | Echoes back the provided message     |
+| `SET <key> <val>` | Stores a value under a key           |
+| `GET <key>`       | Retrieves the value for a key        |
+| `INCR <key>`      | Increments integer value of key      |
+| `MULTI`           | Starts a transaction block           |
+| `EXEC`            | Executes queued transaction commands |
+| `DISCARD`         | Cancels a queued transaction         |
+
+### Concurrency & Networking
+
+- Manual TCP server built with `net.Listen` and `Accept`
+- Goroutine-per-connection concurrency model
+- Graceful client connection and disconnection
+- RESP protocol parser (array, bulk strings, simple strings, errors, integers)
+- Structured logging (with `slog`)
+
+### In-Memory Store
+
+- Thread-safe key-value store using `sync.RWMutex`
+- Optional TTL support via expiry timestamps
+- Clean handling of expired keys
+
+### Transaction System
+
+- Command queueing with `MULTI`
+- Conditional execution with `EXEC`
+- Aborting transactions via `DISCARD`
+- Dirty flag detection for invalid commands within a transaction
+
+## Not Yet Implemented
+
+These are on the roadmap or part of the extended challenge, but **not yet implemented**:
+
+- ❌ **Replication** (leader-follower sync, `PSYNC`, `INFO`)
+- ❌ **Persistence** (RDB snapshot format, disk I/O)
+- ❌ **WAIT, ACK, INFO replica behavior**
+- ❌ **Advanced data types**: Lists, Sets, Streams
+
+## How to Run
+
+1. Clone the repository
+
+```bash
+git clone git@github.com:raphico/codecrafters-redis-go.git
+cd codecrafters-redis-go
 ```
 
-That's all!
+2. Run the server
 
-# Stage 2 & beyond
+```bash
+go run app/main.go
+```
 
-Note: This section is for stages 2 and beyond.
+3. Test with redis-cli
 
-1. Ensure you have `go (1.24)` installed locally
-1. Run `./your_program.sh` to run your Redis server, which is implemented in
-   `app/main.go`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+```bash
+redis-cli PING
+```
+
+## Folder structure
+
+```bash
+├── app/main.go                # Entry point, registers commands, starts server
+├── handlers/                  # Individual command handlers
+├── protocol/
+│   ├── request.go             # Parses incoming RESP requests
+│   └── response.go            # Serializes and formats RESP responses
+├── registry/registry.go       # Dispatches commands to handlers
+├── server/server.go           # TCP server, handles concurrent clients
+├── session/
+│   ├── session.go             # Per-client connection state
+│   └── transaction.go         # Handles transaction queueing and context
+├── store/
+│   ├── store.go               # Thread-safe key-value store
+│   └── entry.go               # Defines key-value pair with optional expiry
+```
