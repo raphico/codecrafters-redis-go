@@ -53,6 +53,7 @@ func main() {
 	registry.Add("DISCARD", handlers.HandleDiscard)
 	registry.Add("INFO", handlers.HandleInfo)
 	registry.Add("REPLCONF", handlers.HandleREPLCONF)
+	registry.Add("PSYNC", handlers.HandlePSYNC)
 
 	err = s.Start()
 	if err != nil {
