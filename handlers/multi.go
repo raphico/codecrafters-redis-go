@@ -5,12 +5,11 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleMulti(s *session.Session, r *protocol.Request) {
+func HandleMulti(s *session.Session, r *protocol.Request) protocol.Response {
 	if s.TxnContext.InTransaction() {
-		s.SendError("MULTI calls can not be nested")
-		return
+		return protocol.NewErrorResponse("MULTI calls can not be nested")
 	}
 
 	s.TxnContext.BeginTransaction()
-	s.SendSimpleString("OK")
+	return protocol.NewSimpleStringResponse("OK")
 }

@@ -8,7 +8,7 @@ import (
 
 type Store struct {
 	// to safely protect shared data from race conditions or crashes
-	mu sync.RWMutex	
+	mu sync.RWMutex
 
 	data map[string]Entry
 }

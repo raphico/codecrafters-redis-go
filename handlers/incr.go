@@ -7,22 +7,20 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleIncr(s *session.Session, r *protocol.Request) {
+func HandleIncr(s *session.Session, r *protocol.Request) protocol.Response {
 	key := r.Args[0]
 
 	e, err := s.Store.Get(key)
 	if err != nil {
 		s.Store.Set(key, "1", nil)
-		s.SendInteger(1)
-		return
+		return protocol.NewIntegerResponse(1)
 	}
 
 	curr, err := strconv.Atoi(e.Value)
 	if err != nil {
-		s.SendError("value is not an integer or out of range")
-		return
+		return protocol.NewErrorResponse("value is not an integer or out of range")
 	}
 
 	s.Store.Update(key, strconv.Itoa(curr+1))
-	s.SendInteger(curr + 1)
+	return protocol.NewIntegerResponse(curr + 1)
 }

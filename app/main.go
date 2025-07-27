@@ -24,7 +24,7 @@ func main() {
 	registry.Add("PING", handlers.HandlePing)
 	registry.Add("INCR", handlers.HandleIncr)
 	registry.Add("MULTI", handlers.HandleMulti)
-	registry.Add("EXEC", handlers.HandleExec)
+	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 
 	err := s.Start()
 	if err != nil {

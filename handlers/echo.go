@@ -5,12 +5,11 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleEcho(s *session.Session, r *protocol.Request) {
+func HandleEcho(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 1 {
-		s.SendError("wrong number of arguments for 'echo' command")
-		return
+		return protocol.NewErrorResponse("wrong number of arguments for 'echo' command")
 	}
 
 	msg := r.Args[0]
-	s.SendSimpleString(msg)
+	return protocol.NewErrorResponse(msg)
 }

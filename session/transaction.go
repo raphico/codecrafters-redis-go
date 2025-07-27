@@ -10,8 +10,8 @@ type TxnContext struct {
 }
 
 type QueuedCommand struct {
-	name string
-	args []string
+	Name string
+	Args []string
 }
 
 func NewTxnContext() *TxnContext {
@@ -24,10 +24,11 @@ func NewTxnContext() *TxnContext {
 
 func (t *TxnContext) BeginTransaction() {
 	t.active = true
+	t.isDirty = false
+	t.queuedCommands = nil
 }
 
 func (t *TxnContext) QueueCommand(name string, args []string) {
-	// FIFO
 	t.queuedCommands = append(t.queuedCommands, QueuedCommand{name, args})
 }
 
@@ -35,10 +36,22 @@ func (t *TxnContext) InTransaction() bool {
 	return t.active
 }
 
+func (t *TxnContext) GetQueuedCommands() []QueuedCommand {
+	out := make([]QueuedCommand, len(t.queuedCommands))
+	copy(out, t.queuedCommands)
+	return out
+}
+
 func (t *TxnContext) MarkDirty() {
 	t.isDirty = true
 }
 
+func (t *TxnContext) IsDirty() bool {
+	return t.isDirty
+}
+
 func (t *TxnContext) EndTransaction() {
 	t.active = false
+	t.isDirty = false
+	t.queuedCommands = nil
 }

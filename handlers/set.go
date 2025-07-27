@@ -10,17 +10,15 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleSet(s *session.Session, r *protocol.Request) {
+func HandleSet(s *session.Session, r *protocol.Request) protocol.Response {
 	if !isSetArgsValid(r.Args) {
-		s.SendError("syntax error")
-		return
+		return protocol.NewErrorResponse("syntax error")
 	}
 
 	key, value := r.Args[0], r.Args[1]
 	if len(r.Args) == 2 {
 		s.Store.Set(key, value, nil)
-		s.SendSimpleString("OK")
-		return
+		return protocol.NewSimpleStringResponse("OK")
 	}
 
 	// this is already checked in isSetArgsValid
@@ -29,7 +27,7 @@ func HandleSet(s *session.Session, r *protocol.Request) {
 
 	s.Store.Set(key, value, &ttl)
 
-	s.SendSimpleString("OK")
+	return protocol.NewSimpleStringResponse("OK")
 }
 
 func isSetArgsValid(args []string) bool {

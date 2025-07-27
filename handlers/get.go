@@ -5,19 +5,17 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleGet(s *session.Session, r *protocol.Request) {
+func HandleGet(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 1 {
-		s.SendError("wrong number of arguments for 'get' command")
-		return
+		return protocol.NewErrorResponse("wrong number of arguments for 'get' command")
 	}
 
 	key := r.Args[0]
 
 	entry, err := s.Store.Get(key)
 	if err != nil {
-		s.SendNullBulkString()
-		return
+		return protocol.NewNullBulkStringResponse()
 	}
 
-	s.SendBulkString(entry.Value)
+	return protocol.NewBulkStringResponse(entry.Value)
 }
