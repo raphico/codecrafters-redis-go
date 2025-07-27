@@ -32,7 +32,7 @@ func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 	cmd := canonical(r.Command)
 	handler, ok := reg.handlers[cmd]
 
-	if s.TxnContext.InTransaction() && cmd != "exec" {
+	if s.TxnContext.InTransaction() && cmd != "exec" && cmd != "discard" {
 		if !ok {
 			s.TxnContext.MarkDirty()
 		}

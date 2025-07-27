@@ -25,6 +25,7 @@ func main() {
 	registry.Add("INCR", handlers.HandleIncr)
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
+	registry.Add("DISCARD", handlers.HandleDiscard)
 
 	err := s.Start()
 	if err != nil {
