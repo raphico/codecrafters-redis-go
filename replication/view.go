@@ -9,6 +9,8 @@ type Info struct {
 	Role         Role
 	MasterReplID string
 	MasterOffset int
+	MasterHost   string
+	MasterPort   int
 }
 
 type View interface {
@@ -26,6 +28,22 @@ type MasterView struct {
 
 func NewMasterView(m *Master) *MasterView {
 	return &MasterView{m}
+}
+
+type ReplicaView struct {
+	r *Replica
+}
+
+func NewReplicaView(r *Replica) *ReplicaView {
+	return &ReplicaView{r}
+}
+
+func (v *ReplicaView) Snapshot() Info {
+	return Info{
+		Role:       RoleReplica,
+		MasterPort: v.r.masterPort,
+		MasterHost: v.r.masterHost,
+	}
 }
 
 func (v *MasterView) Snapshot() Info {

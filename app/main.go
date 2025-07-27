@@ -32,14 +32,17 @@ func main() {
 	}
 
 	var master *replication.Master
+	var replica *replication.Replica
 	if replicaof == nil {
 		master = replication.NewMaster()
+	} else {
+		replica = replication.NewReplica(*replicaof)
 	}
 
 	registry := registry.New()
 	store := store.NewStore()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	s := server.New(*port, logger, registry, store, replicaof, master)
+	s := server.New(*port, logger, registry, store, replicaof, master, replica)
 
 	registry.Add("SET", handlers.HandleSet)
 	registry.Add("GET", handlers.HandleGet)

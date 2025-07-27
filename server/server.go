@@ -21,6 +21,7 @@ type Server struct {
 	store     *store.Store
 	replicaof *config.ReplicaConfig
 	master    *replication.Master
+	replica   *replication.Replica
 }
 
 func New(
@@ -30,6 +31,7 @@ func New(
 	store *store.Store,
 	replicaof *config.ReplicaConfig,
 	master *replication.Master,
+	replica *replication.Replica,
 ) *Server {
 	return &Server{
 		port,
@@ -38,6 +40,7 @@ func New(
 		store,
 		replicaof,
 		master,
+		replica,
 	}
 }
 
@@ -77,6 +80,8 @@ func (s *Server) handleConnection(conn net.Conn) {
 	var sess *session.Session
 	if s.master != nil {
 		sess = session.NewMasterSession(conn, s.store, s.master)
+	} else {
+		sess = session.NewReplicaSession(conn, s.store, s.replica)
 	}
 
 	for {

@@ -20,6 +20,17 @@ type Session struct {
 	Repl       *ReplicationState
 }
 
+func NewReplicaSession(conn net.Conn, store *store.Store, replica *replication.Replica) *Session {
+	return &Session{
+		conn:       conn,
+		Store:      store,
+		TxnContext: NewTxnContext(),
+		Repl: &ReplicationState{
+			View: replication.NewReplicaView(replica),
+		},
+	}
+}
+
 func NewMasterSession(conn net.Conn, store *store.Store, master *replication.Master) *Session {
 	return &Session{
 		conn:       conn,
