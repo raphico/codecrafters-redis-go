@@ -16,7 +16,7 @@ func ValidateReplicaof(config string) (*ReplicaConfig, error) {
 		return nil, nil
 	}
 
-	parts := strings.SplitAfter(config, " ")
+	parts := strings.Fields(config)
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid argument for --replicaof: you must provide host and port")
 	}

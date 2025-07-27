@@ -30,6 +30,5 @@ func (r *Replica) Handshake() error {
 
 	msg := []protocol.Response{protocol.NewBulkStringResponse("PING")}
 	fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
-
 	return nil
 }
