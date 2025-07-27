@@ -1,6 +1,7 @@
 package replication
 
 import (
+	"bufio"
 	"fmt"
 	"log/slog"
 	"net"
@@ -34,6 +35,8 @@ func (r *Replica) Handshake(logger *slog.Logger) {
 
 	logger.Info("MASTER <-> REPLICA sync started")
 
+	reader := bufio.NewReader(conn)
+
 	// 1. sends a PING to the master to check if its alive/responsive
 	msg := []protocol.Response{protocol.NewBulkStringResponse("PING")}
 	_, err = fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
@@ -42,28 +45,44 @@ func (r *Replica) Handshake(logger *slog.Logger) {
 		return
 	}
 
-	// 2. sends two REPLCONF commands to configure the replication
-	cmd := protocol.NewBulkStringResponse("REPLCONF")
+	_, err = reader.ReadString('\n')
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error reading PING response from master %s", err.Error()))
+		return
+	}
 
-	// 2.1 REPLCONF 1: notify the master what port it's listening on
+	// 2. REPLCONF listening-port
+	cmd := protocol.NewBulkStringResponse("REPLCONF")
 	arg := protocol.NewBulkStringResponse("listening-port")
 	port := protocol.NewBulkStringResponse(fmt.Sprint(r.masterPort))
-
 	msg = []protocol.Response{cmd, arg, port}
+
 	_, err = fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error sending REPLCONF listening-port %s", err.Error()))
 		return
 	}
 
-	// 2.2 REPLCONF 2: notify the master of its capabilities
+	_, err = reader.ReadString('\n')
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error reading REPLCONF listening-port %s", err.Error()))
+		return
+	}
+
+	// 3. REPLCONF capa
 	arg = protocol.NewBulkStringResponse("capa")
 	capa := protocol.NewBulkStringResponse("psync2")
-
 	msg = []protocol.Response{cmd, arg, capa}
+
 	_, err = fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error sending REPLCONF capa psync2 %s", err.Error()))
+		return
+	}
+
+	_, err = reader.ReadString('\n')
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error reading REPLCONF capa psync2 %s", err.Error()))
 		return
 	}
 
