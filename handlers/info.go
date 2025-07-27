@@ -14,7 +14,13 @@ func HandleInfo(s *session.Session, r *protocol.Request) protocol.Response {
 	}
 
 	if len(r.Args) == 0 || strings.ToLower(r.Args[0]) == "replication" {
-		return protocol.NewBulkStringResponse(fmt.Sprintf("role:%s", s.Info.Role))
+		info := s.Repl.View.Snapshot()
+		return protocol.NewBulkStringResponse(fmt.Sprintf(
+			"# Replication\r\nrole:%s\r\nmaster_replid:%s\r\nmaster_repl_offset:%d",
+			info.Role,
+			info.MasterReplID,
+			info.MasterOffset,
+		))
 	}
 
 	return protocol.NewErrorResponse(fmt.Sprintf("unknown INFO section '%s'", r.Args[0]))

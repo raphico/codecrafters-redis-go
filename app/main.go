@@ -9,6 +9,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/handlers"
 	"github.com/codecrafters-io/redis-starter-go/registry"
+	"github.com/codecrafters-io/redis-starter-go/replication"
 	"github.com/codecrafters-io/redis-starter-go/server"
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
@@ -30,10 +31,15 @@ func main() {
 		return
 	}
 
+	var master *replication.Master
+	if replicaof == nil {
+		master = replication.NewMaster()
+	}
+
 	registry := registry.New()
 	store := store.NewStore()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	s := server.New(*port, logger, registry, store, replicaof)
+	s := server.New(*port, logger, registry, store, replicaof, master)
 
 	registry.Add("SET", handlers.HandleSet)
 	registry.Add("GET", handlers.HandleGet)

@@ -9,6 +9,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/protocol"
 	"github.com/codecrafters-io/redis-starter-go/registry"
+	"github.com/codecrafters-io/redis-starter-go/replication"
 	"github.com/codecrafters-io/redis-starter-go/session"
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
@@ -19,6 +20,7 @@ type Server struct {
 	registry  *registry.Registry
 	store     *store.Store
 	replicaof *config.ReplicaConfig
+	master    *replication.Master
 }
 
 func New(
@@ -27,6 +29,7 @@ func New(
 	registry *registry.Registry,
 	store *store.Store,
 	replicaof *config.ReplicaConfig,
+	master *replication.Master,
 ) *Server {
 	return &Server{
 		port,
@@ -34,6 +37,7 @@ func New(
 		registry,
 		store,
 		replicaof,
+		master,
 	}
 }
 
@@ -69,7 +73,11 @@ func (s *Server) handleConnection(conn net.Conn) {
 	}()
 
 	reader := bufio.NewReader(conn)
-	session := session.NewSession(conn, s.store, s.replicaof)
+
+	var sess *session.Session
+	if s.master != nil {
+		sess = session.NewMasterSession(conn, s.store, s.master)
+	}
 
 	for {
 		request, err := protocol.ParseRequest(reader)
@@ -80,6 +88,6 @@ func (s *Server) handleConnection(conn net.Conn) {
 
 		s.logger.Debug("received command", "addr", addr, "command", request.Command)
 
-		s.registry.Dispatch(session, request)
+		s.registry.Dispatch(sess, request)
 	}
 }

@@ -4,34 +4,32 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/replication"
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
+
+type ReplicationState struct {
+	View replication.View
+}
 
 type Session struct {
 	conn       net.Conn
 	Store      *store.Store
 	TxnContext *TxnContext
-	Info       info
+	Repl       *ReplicationState
 }
 
-type info struct {
-	Role string
-}
-
-func NewSession(conn net.Conn, store *store.Store, replicaof *config.ReplicaConfig) *Session {
-	info := info{Role: "master"}
-	if replicaof != nil {
-		info.Role = "slave"
-	}
-
+func NewMasterSession(conn net.Conn, store *store.Store, master *replication.Master) *Session {
 	return &Session{
 		conn:       conn,
 		Store:      store,
 		TxnContext: NewTxnContext(),
-		Info:       info,
+		Repl: &ReplicationState{
+			View: replication.NewMasterView(master),
+		},
 	}
+
 }
 
 func (s *Session) SendResponse(resp protocol.Response) {
