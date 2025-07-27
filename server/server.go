@@ -58,7 +58,7 @@ func (s *Server) Start() error {
 
 	if s.replica != nil {
 		// Handshake is initiated after the server startup and handle asynchronously
-		go s.replica.Handshake()
+		go s.replica.Handshake(s.logger)
 	}
 
 	for {
