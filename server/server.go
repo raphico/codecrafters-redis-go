@@ -13,13 +13,13 @@ import (
 )
 
 type Server struct {
-	port     string
+	port     int
 	logger   *slog.Logger
 	registry *registry.Registry
 	store    *store.Store
 }
 
-func New(port string, logger *slog.Logger, registry *registry.Registry, store *store.Store) *Server {
+func New(port int, logger *slog.Logger, registry *registry.Registry, store *store.Store) *Server {
 	return &Server{
 		port,
 		logger,
@@ -29,16 +29,16 @@ func New(port string, logger *slog.Logger, registry *registry.Registry, store *s
 }
 
 func (s *Server) Start() error {
-	addr := fmt.Sprintf("0.0.0.0:%s", s.port)
+	addr := fmt.Sprintf("0.0.0.0:%d", s.port)
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
-		return fmt.Errorf("failed to bind to %s", s.port)
+		return fmt.Errorf("failed to bind to %d", s.port)
 	}
 
 	defer l.Close()
 
-	s.logger.Info(fmt.Sprintf("Redis server running on port %s", s.port))
+	s.logger.Info(fmt.Sprintf("Redis server running on port %d", s.port))
 
 	for {
 		conn, err := l.Accept()

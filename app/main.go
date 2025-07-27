@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log/slog"
 	"os"
 
@@ -10,13 +11,15 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
-const port = "6379"
-
 func main() {
+	port := flag.Int("port", 6379, "a custom port for running the redis server")
+
+	flag.Parse()
+
 	registry := registry.New()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	store := store.NewStore()
-	s := server.New(port, logger, registry, store)
+	s := server.New(*port, logger, registry, store)
 
 	registry.Add("SET", handlers.HandleSet)
 	registry.Add("GET", handlers.HandleGet)
