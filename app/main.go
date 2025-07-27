@@ -52,6 +52,7 @@ func main() {
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
 	registry.Add("INFO", handlers.HandleInfo)
+	registry.Add("REPLCONF", handlers.HandleREPLCONF)
 
 	err = s.Start()
 	if err != nil {
