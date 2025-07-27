@@ -56,6 +56,11 @@ func (s *Server) Start() error {
 
 	s.logger.Info(fmt.Sprintf("Redis server running on port %d", s.port))
 
+	if s.replica != nil {
+		// Handshake is initiated after the server startup and handle asynchronously
+		go s.replica.Handshake()
+	}
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {

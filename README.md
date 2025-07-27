@@ -16,16 +16,17 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 
 ### Core Commands
 
-| Command           | Description                          |
-| ----------------- | ------------------------------------ |
-| `PING`            | Returns `PONG` or a custom message   |
-| `ECHO <msg>`      | Echoes back the provided message     |
-| `SET <key> <val>` | Stores a value under a key           |
-| `GET <key>`       | Retrieves the value for a key        |
-| `INCR <key>`      | Increments integer value of key      |
-| `MULTI`           | Starts a transaction block           |
-| `EXEC`            | Executes queued transaction commands |
-| `DISCARD`         | Cancels a queued transaction         |
+| Command           | Description                                                |
+| ----------------- | ---------------------------------------------------------- |
+| `PING`            | Returns `PONG` or a custom message                         |
+| `ECHO <msg>`      | Echoes back the provided message                           |
+| `SET <key> <val>` | Stores a value under a key                                 |
+| `GET <key>`       | Retrieves the value for a key                              |
+| `INCR <key>`      | Increments integer value of key                            |
+| `MULTI`           | Starts a transaction block                                 |
+| `EXEC`            | Executes queued transaction commands                       |
+| `DISCARD`         | Cancels a queued transaction                               |
+| `INFO <section>`  | Returns server information; optionally filtered by section |
 
 ### Concurrency & Networking
 
@@ -81,17 +82,36 @@ redis-cli PING
 ## Folder structure
 
 ```bash
-├── app/main.go                # Entry point, registers commands, starts server
-├── handlers/                  # Individual command handlers
+├── app/
+│   └── main.go                # Entry point: command registration, server start
+│
+├── config/
+│   └── replica.go             # Parse and validate --replicaof flag
+│
+├── handlers/                  # RESP command handlers (e.g., INFO, SET, GET, etc.)
+│   └── info.go                # INFO command handler (more can be added)
+│
 ├── protocol/
-│   ├── request.go             # Parses incoming RESP requests
-│   └── response.go            # Serializes and formats RESP responses
-├── registry/registry.go       # Dispatches commands to handlers
-├── server/server.go           # TCP server, handles concurrent clients
+│   ├── request.go             # Parse RESP requests
+│   └── response.go            # Format RESP responses
+│
+├── registry/
+│   └── registry.go            # Command dispatch registry
+│
+├── replication/
+│   ├── master.go              # State and logic for master role
+│   ├── replica.go             # State and logic for replica role
+│   └── view.go                # Unified read-only interface (used by handlers like INFO)
+│
+├── server/
+│   └── server.go              # TCP server, manages client connections
+│
 ├── session/
-│   ├── session.go             # Per-client connection state
-│   └── transaction.go         # Handles transaction queueing and context
+│   ├── session.go             # Per-client state (e.g., auth, transaction, replication info)
+│   └── transaction.go         # Handles transaction logic per session
+│
 ├── store/
-│   ├── store.go               # Thread-safe key-value store
-│   └── entry.go               # Defines key-value pair with optional expiry
+│   ├── store.go               # In-memory key-value store with thread-safety
+│   └── entry.go               # Defines entry: key-value + optional expiry
+
 ```

@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-
 	port := flag.Int("port", 6379, "a custom port for running the redis server")
 	rawReplicaof := flag.String(
 		"replicaof",
