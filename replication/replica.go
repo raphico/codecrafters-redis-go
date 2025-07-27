@@ -86,5 +86,23 @@ func (r *Replica) Handshake(logger *slog.Logger, listeningPort int) {
 		return
 	}
 
+	// 4. PSYNC
+	cmd = protocol.NewBulkStringResponse("PSYNC")
+	replId := protocol.NewBulkStringResponse("?")
+	offset := protocol.NewBulkStringResponse("-1")
+	msg = []protocol.Response{cmd, replId, offset}
+
+	_, err = fmt.Fprint(conn, protocol.NewArrayResponse(msg).Serialize())
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error sending PSYNC %s", err.Error()))
+		return
+	}
+
+	_, err = reader.ReadString('\n')
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error reading PSYNC %s", err.Error()))
+		return
+	}
+
 	logger.Info("MASTER <-> REPLICA sync successful")
 }
