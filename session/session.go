@@ -46,3 +46,7 @@ func NewMasterSession(conn net.Conn, store *store.Store, master *replication.Mas
 func (s *Session) SendResponse(resp protocol.Response) {
 	fmt.Fprint(s.conn, resp.Serialize())
 }
+
+func (s *Session) CloseConnection() {
+	s.conn.Close()
+}

@@ -14,6 +14,7 @@ const (
 	BulkStringType
 	IntegerType
 	ArrayType
+	RawBytesType
 )
 
 type Response struct {
@@ -21,7 +22,7 @@ type Response struct {
 	Value any
 }
 
-func (r Response) Serialize() string {
+func (r Response) Serialize() any {
 	switch r.Type {
 	case ErrorType:
 		return fmt.Sprintf("-ERR %s\r\n", r.Value)
@@ -41,15 +42,26 @@ func (r Response) Serialize() string {
 
 		// write bulk strings
 		for i := range length {
-			builder.WriteString(responses[i].Serialize())
+			builder.WriteString(responses[i].Serialize().(string))
 		}
 
 		return builder.String()
 	case BulkStringType:
 		str := r.Value.(string)
 		return fmt.Sprintf("$%d\r\n%s\r\n", len(str), r.Value)
+	case RawBytesType:
+		data := r.Value.([]byte)
+		header := fmt.Sprintf("$%d\r\n", len(data))
+		return append([]byte(header), data...)
 	default:
 		panic("Invalid response type")
+	}
+}
+
+func NewRawBytesResponse(value []byte) Response {
+	return Response {
+		Type: RawBytesType,
+		Value: value,
 	}
 }
 
