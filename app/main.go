@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -21,11 +20,7 @@ func main() {
 
 	flag.Parse()
 
-	config, err := config.NewConfig(*dbfilename, *dir)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to initialize config: %s\n", err.Error())
-		return
-	}
+	config:= config.NewConfig(*dbfilename, *dir)
 
 	registry := registry.New()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -42,7 +37,7 @@ func main() {
 	registry.Add("DISCARD", handlers.HandleDiscard)
 	registry.Add("CONFIG", handlers.HandleConfig)
 
-	err = s.Start()
+	err := s.Start()
 	if err != nil {
 		logger.Error(err.Error())
 		return
