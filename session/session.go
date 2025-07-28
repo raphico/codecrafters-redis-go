@@ -20,7 +20,7 @@ type Session struct {
 	Repl       *ReplicationState
 }
 
-func NewReplicaSession(conn net.Conn, store *store.Store, replica *replication.Replica) *Session {
+func NewReplicaSession(conn net.Conn, store *store.Store, replica *replication.ReplicaClient) *Session {
 	return &Session{
 		conn:       conn,
 		Store:      store,

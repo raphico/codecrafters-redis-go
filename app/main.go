@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+
 	port := flag.Int("port", 6379, "a custom port for running the redis server")
 	rawReplicaof := flag.String(
 		"replicaof",
@@ -30,17 +31,18 @@ func main() {
 		return
 	}
 
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	registry := registry.New()
+	store := store.NewStore()
+
 	var master *replication.Master
-	var replica *replication.Replica
+	var replica *replication.ReplicaClient
 	if replicaof == nil {
 		master = replication.NewMaster()
 	} else {
-		replica = replication.NewReplica(*replicaof)
+		replica = replication.NewReplicaClient(*replicaof, logger)
 	}
 
-	registry := registry.New()
-	store := store.NewStore()
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	s := server.New(*port, logger, registry, store, replicaof, master, replica)
 
 	registry.Add("SET", handlers.HandleSet)

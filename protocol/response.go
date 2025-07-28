@@ -57,8 +57,8 @@ func (r Response) Serialize() any {
 }
 
 func NewRawBytesResponse(value []byte) Response {
-	return Response {
-		Type: RawBytesType,
+	return Response{
+		Type:  RawBytesType,
 		Value: value,
 	}
 }

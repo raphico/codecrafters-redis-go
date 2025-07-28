@@ -21,7 +21,7 @@ type Server struct {
 	store     *store.Store
 	replicaof *config.ReplicaConfig
 	master    *replication.Master
-	replica   *replication.Replica
+	replica   *replication.ReplicaClient
 }
 
 func New(
@@ -31,7 +31,7 @@ func New(
 	store *store.Store,
 	replicaof *config.ReplicaConfig,
 	master *replication.Master,
-	replica *replication.Replica,
+	replica *replication.ReplicaClient,
 ) *Server {
 	return &Server{
 		port,
@@ -58,7 +58,7 @@ func (s *Server) Start() error {
 
 	if s.replica != nil {
 		// Handshake is initiated after the server startup and handle asynchronously
-		go s.replica.Handshake(s.logger, s.port)
+		go s.replica.EstablishHandshake(s.port)
 	}
 
 	for {

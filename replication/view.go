@@ -31,10 +31,10 @@ func NewMasterView(m *Master) *MasterView {
 }
 
 type ReplicaView struct {
-	r *Replica
+	r *ReplicaClient
 }
 
-func NewReplicaView(r *Replica) *ReplicaView {
+func NewReplicaView(r *ReplicaClient) *ReplicaView {
 	return &ReplicaView{r}
 }
 
@@ -49,7 +49,7 @@ func (v *ReplicaView) Snapshot() Info {
 func (v *MasterView) Snapshot() Info {
 	return Info{
 		Role:         RoleMaster,
-		MasterReplID: v.m.masterReplID,
-		MasterOffset: v.m.masterOffset,
+		MasterReplID: v.m.replID,
+		MasterOffset: v.m.offset,
 	}
 }
