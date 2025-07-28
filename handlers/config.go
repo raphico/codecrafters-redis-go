@@ -22,7 +22,7 @@ func HandleConfig(s *session.Session, r *protocol.Request) protocol.Response {
 	}
 }
 
-func handleConfigGet(s *session.Session, r *protocol.Request) protocol.Response  {
+func handleConfigGet(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 2 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'config|get' command")
 	}

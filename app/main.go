@@ -20,7 +20,7 @@ func main() {
 
 	flag.Parse()
 
-	config:= config.NewConfig(*dbfilename, *dir)
+	config := config.NewConfig(*dbfilename, *dir)
 
 	registry := registry.New()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -36,6 +36,7 @@ func main() {
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
 	registry.Add("CONFIG", handlers.HandleConfig)
+	registry.Add("KEYS", handlers.HandleKeys)
 
 	err := s.Start()
 	if err != nil {

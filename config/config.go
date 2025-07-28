@@ -21,6 +21,6 @@ func NewConfig(dbfilename, dir string) *Config {
 func (c *Config) GetConfig() map[string]string {
 	return map[string]string{
 		"dbfilename": c.RDB.Dbfilename,
-		"dir": c.RDB.Dir,
+		"dir":        c.RDB.Dir,
 	}
 }

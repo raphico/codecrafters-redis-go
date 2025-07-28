@@ -72,3 +72,18 @@ func (s *Store) Delete(key string) {
 
 	delete(s.data, key)
 }
+
+func (s *Store) Keys() []string {
+	// allows multiple readers at the same time, but blocks if a writer is currently modifying
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var keys []string
+	for k, e := range s.data {
+		if !e.IsExpired() {
+			keys = append(keys, k)
+		}
+	}
+
+	return keys
+}
