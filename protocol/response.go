@@ -50,9 +50,7 @@ func (r Response) Serialize() any {
 		str := r.Value.(string)
 		return fmt.Sprintf("$%d\r\n%s\r\n", len(str), r.Value)
 	case RawBytesType:
-		data := r.Value.([]byte)
-		header := fmt.Sprintf("$%d\r\n", len(data))
-		return append([]byte(header), data...)
+		return r.Value
 	default:
 		panic("Invalid response type")
 	}

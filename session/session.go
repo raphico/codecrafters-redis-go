@@ -44,6 +44,12 @@ func NewMasterSession(conn net.Conn, store *store.Store, master *replication.Mas
 }
 
 func (s *Session) SendResponse(resp protocol.Response) {
+	if resp.Type == protocol.RawBytesType {
+		fmt.Fprintf(s.conn, "$%d\r\n", len(resp.Value.([]byte)))
+		s.conn.Write(resp.Value.([]byte))
+		return
+	}
+
 	fmt.Fprint(s.conn, resp.Serialize())
 }
 
