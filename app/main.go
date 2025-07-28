@@ -1,9 +1,12 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 
+	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/handlers"
 	"github.com/codecrafters-io/redis-starter-go/registry"
 	"github.com/codecrafters-io/redis-starter-go/server"
@@ -13,10 +16,21 @@ import (
 const port = "6379"
 
 func main() {
+	dir := flag.String("dir", "/tmp/redis-files", "the path of the rdb file")
+	dbfilename := flag.String("dbfilename", "dump.rdb", "the filename of the rdb file")
+
+	flag.Parse()
+
+	config, err := config.NewConfig(*dbfilename, *dir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to initialize config: %s\n", err.Error())
+		return
+	}
+
 	registry := registry.New()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	store := store.NewStore()
-	s := server.New(port, logger, registry, store)
+	s := server.New(port, logger, registry, store, config)
 
 	registry.Add("SET", handlers.HandleSet)
 	registry.Add("GET", handlers.HandleGet)
@@ -26,8 +40,9 @@ func main() {
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
+	registry.Add("CONFIG", handlers.HandleConfig)
 
-	err := s.Start()
+	err = s.Start()
 	if err != nil {
 		logger.Error(err.Error())
 		return

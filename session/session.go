@@ -12,13 +12,15 @@ type Session struct {
 	conn       net.Conn
 	Store      *store.Store
 	TxnContext *TxnContext
+	Config     ConfigAccessor
 }
 
-func NewSession(conn net.Conn, store *store.Store) *Session {
+func NewSession(conn net.Conn, store *store.Store, config ConfigAccessor) *Session {
 	return &Session{
 		conn:       conn,
 		Store:      store,
 		TxnContext: NewTxnContext(),
+		Config:     config,
 	}
 }
 
