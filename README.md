@@ -23,12 +23,13 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `ECHO <msg>`                  | Returns the exact message sent                                                                                          |
 | `SET <key> <val>`             | Stores `val` under `key`, overwrites if it exists                                                                       |
 | `GET <key>`                   | Retrieves value for `key`, or nil if it doesn’t exist                                                                   |
+| `DEL <key> [key ...]`         | Deletes one or more the key-value pairs                                                                                 |
 | `INCR <key>`                  | Increments an integer value (creates it if missing, starts at 0)                                                        |
 | `MULTI`                       | Begins transaction mode, queues following commands                                                                      |
 | `EXEC`                        | Executes queued transaction commands                                                                                    |
 | `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                                                 |
 | `CONFIG GET`                  | Returns RDB config like filename and directory                                                                          |
-| `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                                                     |
+| `RPUSH <key> <val> [val ...]` | Appends value(s) to list at `key`, creates list if it doesn’t exist                                                     |
 | `LPUSH <key> <val> [val ...]` | Prepends value(s) to the start of the list at `key` (creates list if it doesn’t exist)                                  |
 | `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices)                            |
 | `LLEN <key>`                  | Returns the length of the list stored at `key`                                                                          |
@@ -63,10 +64,6 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Parses string keys and values from standard RDB format
 - Supports optional TTL and skips expired keys
 - Validates file structure and handles malformed input
-
-## In Progress
-
-- Lists
 
 ## Not Yet Implemented
 

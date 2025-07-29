@@ -83,12 +83,18 @@ func (s *Store) Update(key string, value any) error {
 	return nil
 }
 
-func (s *Store) Delete(key string) {
+func (s *Store) Delete(key string) int {
 	// blocks all other writers and readers
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	delete(s.data, key)
+	_, exists := s.data[key]
+	if exists {
+		delete(s.data, key)
+		return 1
+	}
+
+	return 0
 }
 
 func (s *Store) Keys() []string {
