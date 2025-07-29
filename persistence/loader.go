@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/codecrafters-io/redis-starter-go/session"
 	"github.com/codecrafters-io/redis-starter-go/store"
@@ -105,10 +106,69 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 			return err
 		}
 
-		store.Set(key, value, nil)
+		pb, err := reader.Peek(1)
+		if err != nil {
+			return err
+		}
+
+		if pb[0] != OpcodeExpiryMillis && pb[0] != OpcodeExpirySecs {
+			store.Set(key, value, nil)
+			continue
+		}
+		
+		b, err = reader.ReadByte()
+		if err != nil {
+			return err
+		}
+
+		if b == OpcodeExpiryMillis {
+			//The expire timestamp is expressed in Unix time,
+            // stored as an 8-byte unsigned long, in little-endian
+			expiryBytes := make([]byte, 8)
+			if _, err := io.ReadFull(reader, expiryBytes); err != nil {
+				return err
+			}
+
+			expiryMillis := binary.LittleEndian.Uint64(expiryBytes)
+			ttl := computeTTL(int64(expiryMillis), true)
+
+			store.Set(key, value, ttl)
+		}
+
+		// The expire timestamp, expressed in Unix time,
+        // stored as an 4-byte unsigned integer, in little-endian
+		expiryBytes := make([]byte, 4)
+		if _, err := io.ReadFull(reader, expiryBytes); err != nil {
+			return err
+		}
+
+		expirySeconds := binary.LittleEndian.Uint32(expiryBytes)
+		ttl := computeTTL(int64(expirySeconds), false)
+
+		store.Set(key, value, ttl)
 	}
 
 	return nil
+}
+
+func computeTTL(expiry int64, isMillis bool) *time.Duration {
+	if isMillis {
+		ttlMillis := expiry - time.Now().UnixMilli()
+		if ttlMillis <= 0 {
+			return nil
+		}
+
+		ttl := time.Duration(ttlMillis) * time.Millisecond
+		return &ttl
+	}
+
+	ttlSeconds := expiry - time.Now().Unix()
+	if ttlSeconds <= 0 {
+		return nil
+	}
+
+	ttl := time.Duration(ttlSeconds) * time.Second
+	return &ttl
 }
 
 // redis uses a special variable-length format to encode size instead of raw bytes
