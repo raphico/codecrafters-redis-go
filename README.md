@@ -17,18 +17,18 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 
 ### Commands
 
-| Command           | Description                                                              |
-| ----------------- | ------------------------------------------------------------------------ |
-| `PING`            | Returns `PONG` or a custom message                                       |
-| `ECHO <msg>`      | Echoes back the provided message                                         |
-| `SET <key> <val>` | Stores a value under a key                                               |
-| `GET <key>`       | Retrieves the value for a key                                            |
-| `INCR <key>`      | Increments integer value of key                                          |
-| `MULTI`           | Starts a transaction block                                               |
-| `EXEC`            | Executes queued transaction commands                                     |
-| `KEYS`            | Returns keys matching a give pattern                                     |
-| `CONFIG`          | Returns RDB configuration parameters (filename and directory)            |
-| `RPUSH`           | creates a new list or appends an element to the tail of an existing list |
+| Command             | Description                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| `PING`              | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`) |
+| `ECHO <msg>`        | Returns the exact message sent                                           |
+| `SET <key> <val>`   | Stores `val` under `key`, overwrites if it exists                        |
+| `GET <key>`         | Retrieves value for `key`, or nil if it doesn’t exist                    |
+| `INCR <key>`        | Increments an integer value (creates it if missing, starts at 0)         |
+| `MULTI`             | Begins transaction mode, queues following commands                       |
+| `EXEC`              | Executes queued transaction commands                                     |
+| `KEYS <pattern>`    | Returns all keys matching glob-style pattern (`*`, etc)                  |
+| `CONFIG GET`        | Returns RDB config like filename and directory                           |
+| `RPUSH <key> <val>` | Appends value(s) to list at `key`, creates list if it doesn’t exist      |
 
 ### Concurrency & Networking
 
