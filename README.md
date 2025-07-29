@@ -17,17 +17,18 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 
 ### Commands
 
-| Command           | Description                                                   |
-| ----------------- | ------------------------------------------------------------- |
-| `PING`            | Returns `PONG` or a custom message                            |
-| `ECHO <msg>`      | Echoes back the provided message                              |
-| `SET <key> <val>` | Stores a value under a key                                    |
-| `GET <key>`       | Retrieves the value for a key                                 |
-| `INCR <key>`      | Increments integer value of key                               |
-| `MULTI`           | Starts a transaction block                                    |
-| `EXEC`            | Executes queued transaction commands                          |
-| `KEYS`            | Returns keys matching a give pattern                          |
-| `CONFIG`          | Returns RDB configuration parameters (filename and directory) |
+| Command           | Description                                                              |
+| ----------------- | ------------------------------------------------------------------------ |
+| `PING`            | Returns `PONG` or a custom message                                       |
+| `ECHO <msg>`      | Echoes back the provided message                                         |
+| `SET <key> <val>` | Stores a value under a key                                               |
+| `GET <key>`       | Retrieves the value for a key                                            |
+| `INCR <key>`      | Increments integer value of key                                          |
+| `MULTI`           | Starts a transaction block                                               |
+| `EXEC`            | Executes queued transaction commands                                     |
+| `KEYS`            | Returns keys matching a give pattern                                     |
+| `CONFIG`          | Returns RDB configuration parameters (filename and directory)            |
+| `RPUSH`           | creates a new list or appends an element to the tail of an existing list |
 
 ### Concurrency & Networking
 
@@ -58,11 +59,15 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Supports optional TTL and skips expired keys
 - Validates file structure and handles malformed input
 
+## In Progress
+
+- Lists
+
 ## Not Yet Implemented
 
 These are on the roadmap or part of the extended challenge, but **not yet implemented**:
 
-- ❌ **Advanced data types**: Lists, Streams
+- ❌ **Advanced data types**: Streams
 
 ## How to Run
 

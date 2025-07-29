@@ -43,6 +43,7 @@ func main() {
 	registry.Add("CONFIG", handlers.HandleConfig)
 	registry.Add("SAVE", handlers.HandleSave)
 	registry.Add("KEYS", handlers.HandleKeys)
+	registry.Add("RPUSH", handlers.HandleRPUSH)
 
 	err = s.Start()
 	if err != nil {

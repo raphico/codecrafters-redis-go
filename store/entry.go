@@ -3,7 +3,7 @@ package store
 import "time"
 
 type Entry struct {
-	Value      string
+	Value      any
 	ExpiryTime *time.Time
 }
 

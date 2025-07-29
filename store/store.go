@@ -19,24 +19,27 @@ func NewStore() *Store {
 	}
 }
 
-func (s *Store) Get(key string) (*Entry, bool, error) {
+func (s *Store) Get(key string) (*Entry, error) {
 	// allows multiple readers at the same time, but blocks if a writer is currently modifying
 	s.mu.RLock()
-	defer s.mu.RUnlock()
-
 	e, ok := s.data[key]
+	s.mu.RUnlock()
+
 	if !ok {
-		return nil, false, fmt.Errorf("key '%s' does not exist", key)
+		return nil, fmt.Errorf("key '%s' does not exist", key)
 	}
 
 	if e.IsExpired() {
-		return nil, true, nil
+		s.mu.Lock()
+		delete(s.data, key)
+		s.mu.Unlock()
+		return nil, fmt.Errorf("key '%s' does not exist", key)
 	}
 
-	return &e, false, nil
+	return &e, nil
 }
 
-func (s *Store) Set(key, value string, ttl *time.Duration) {
+func (s *Store) Set(key string, value any, ttl *time.Duration) {
 	// blocks all other writers and readers
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -50,13 +53,18 @@ func (s *Store) Set(key, value string, ttl *time.Duration) {
 	s.data[key] = Entry{Value: value, ExpiryTime: exp}
 }
 
-func (s *Store) Update(key, value string) error {
+func (s *Store) Update(key string, value any) error {
 	// blocks all other writers and readers
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	e, ok := s.data[key]
 	if !ok {
+		return fmt.Errorf("key '%s' does not exist", key)
+	}
+
+	if e.IsExpired() {
+		delete(s.data, key)
 		return fmt.Errorf("key '%s' does not exist", key)
 	}
 

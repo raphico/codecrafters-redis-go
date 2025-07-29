@@ -12,15 +12,15 @@ func HandleGet(s *session.Session, r *protocol.Request) protocol.Response {
 
 	key := r.Args[0]
 
-	entry, expired, err := s.Store.Get(key)
+	entry, err := s.Store.Get(key)
 	if err != nil {
 		return protocol.NewNullBulkStringResponse()
 	}
 
-	if expired {
-		s.Store.Delete(key)
-		return protocol.NewNullBulkStringResponse()
+	value, ok := entry.Value.(string)
+	if !ok {
+		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
-	return protocol.NewBulkStringResponse(entry.Value)
+	return protocol.NewBulkStringResponse(value)
 }
