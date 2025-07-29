@@ -68,7 +68,7 @@ func (s *Store) Update(key string, value any) error {
 		return fmt.Errorf("key '%s' does not exist", key)
 	}
 
-	s.data[key] = Entry{Value: value, ExpiryTime: e.ExpiryTime}
+	s.data[key] = Entry{Value: value, Kind: e.Kind, ExpiryTime: e.ExpiryTime}
 
 	return nil
 }
