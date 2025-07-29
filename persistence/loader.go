@@ -138,7 +138,9 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 			return err
 		}
 
-		store.Set(key, value, ttl)
+		if ttl != nil {
+			store.Set(key, value, ttl)
+		}
 		ttl = nil
 	}
 
