@@ -44,6 +44,7 @@ func main() {
 	registry.Add("SAVE", handlers.HandleSave)
 	registry.Add("KEYS", handlers.HandleKeys)
 	registry.Add("RPUSH", handlers.HandleRPUSH)
+	registry.Add("LPUSH", handlers.HandleLPUSH)
 	registry.Add("LRANGE", handlers.HandleLRANGE)
 
 	err = s.Start()

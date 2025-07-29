@@ -29,6 +29,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                      |
 | `CONFIG GET`                  | Returns RDB config like filename and directory                                               |
 | `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                          |
+| `LPUSH <key> <val> [val ...]` | Prepends value(s) to the start of the list at `key` (creates list if it doesn’t exist)       |
 | `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices) |
 
 ### Concurrency & Networking
