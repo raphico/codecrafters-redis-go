@@ -7,7 +7,7 @@ import (
 )
 
 func HandleType(s *session.Session, r *protocol.Request) protocol.Response {
-	if len(r.Args) < 1 {
+	if len(r.Args) != 1 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'type' command")
 	}
 

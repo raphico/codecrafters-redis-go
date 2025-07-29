@@ -40,6 +40,7 @@ func main() {
 	registry.Add("DECR", handlers.HandleDecr)
 	registry.Add("EXISTS", handlers.HandleExists)
 	registry.Add("TYPE", handlers.HandleType)
+	registry.Add("TTL", handlers.HandleTtl)
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)

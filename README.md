@@ -28,6 +28,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `DECR <key>`                  | Decrements an integer value (creates it if missing, starts at -1)                                                       |
 | `EXISTS <key> [key ...]`      | Returns an integer of how many of the provided keys exist                                                               |
 | `TYPE <key>`                  | Returns the type of the value stored at key                                                                             |
+| `TTL <key>`                   | Returns remaining time-to-live in seconds (-1 if no expiry, -2 if key missing)                                          |
 | `MULTI`                       | Begins transaction mode, queues following commands                                                                      |
 | `EXEC`                        | Executes queued transaction commands                                                                                    |
 | `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                                                 |
