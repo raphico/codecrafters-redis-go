@@ -52,6 +52,7 @@ func main() {
 	registry.Add("LRANGE", handlers.HandleLrange)
 	registry.Add("LLEN", handlers.HandleLlen)
 	registry.Add("LPOP", handlers.HandleLpop)
+	registry.Add("RPOP", handlers.HandleRpop)
 	registry.Add("BLPOP", handlers.HandleBlpop)
 	registry.Add("DEL", handlers.HandleDel)
 

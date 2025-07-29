@@ -38,6 +38,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `LRANGE <key> <start> <stop>`                  | Returns elements in the list from index start to stop (inclusive, supports negative indices)                            |
 | `LLEN <key>`                                   | Returns the length of the list stored at `key`                                                                          |
 | `LPOP  <key>`                                  | Removes and returns the first element of the list at `key`                                                              |
+| `RPOP  <key>`                                  | Removes and returns the last element of the list at `key`                                                               |
 | `BLPOP key timeout`                            | Removes and returns the first element of the list at the given key, block if empty until a timeout or new data arrives. |
 
 ### Concurrency & Networking
