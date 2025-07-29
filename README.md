@@ -17,18 +17,19 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 
 ### Commands
 
-| Command             | Description                                                              |
-| ------------------- | ------------------------------------------------------------------------ |
-| `PING`              | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`) |
-| `ECHO <msg>`        | Returns the exact message sent                                           |
-| `SET <key> <val>`   | Stores `val` under `key`, overwrites if it exists                        |
-| `GET <key>`         | Retrieves value for `key`, or nil if it doesn’t exist                    |
-| `INCR <key>`        | Increments an integer value (creates it if missing, starts at 0)         |
-| `MULTI`             | Begins transaction mode, queues following commands                       |
-| `EXEC`              | Executes queued transaction commands                                     |
-| `KEYS <pattern>`    | Returns all keys matching glob-style pattern (`*`, etc)                  |
-| `CONFIG GET`        | Returns RDB config like filename and directory                           |
-| `RPUSH <key> <val>` | Appends value(s) to list at `key`, creates list if it doesn’t exist      |
+| Command                       | Description                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| `PING`                        | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`)                     |
+| `ECHO <msg>`                  | Returns the exact message sent                                                               |
+| `SET <key> <val>`             | Stores `val` under `key`, overwrites if it exists                                            |
+| `GET <key>`                   | Retrieves value for `key`, or nil if it doesn’t exist                                        |
+| `INCR <key>`                  | Increments an integer value (creates it if missing, starts at 0)                             |
+| `MULTI`                       | Begins transaction mode, queues following commands                                           |
+| `EXEC`                        | Executes queued transaction commands                                                         |
+| `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                      |
+| `CONFIG GET`                  | Returns RDB config like filename and directory                                               |
+| `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                          |
+| `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices) |
 
 ### Concurrency & Networking
 

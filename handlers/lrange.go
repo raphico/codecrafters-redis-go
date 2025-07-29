@@ -34,14 +34,38 @@ func HandleLRANGE(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
-	length := len(e.Value.([]string))
-	if stop >= length {
-		stop = length - 1
+	list, ok := e.Value.([]string)
+	if !ok {
+		panic("list is corrupted")
+	}
+
+	length := len(list)
+
+	// normalize negative indices
+	if start < 0 {
+		start += length
+	}
+
+	if stop < 0 {
+		stop += length
+	}
+
+	// negative index is out of range (i.e. >= the length of the list)
+	if start < 0 {
+		start = 0
+	}
+
+	if stop < 0 {
+		stop = 0
+	}
+
+	if start > stop || start >= length {
+		return protocol.NewArrayResponse([]protocol.Response{})
 	}
 
 	var resp []protocol.Response
 	for i := start; i <= stop; i++ {
-		resp = append(resp, protocol.NewBulkStringResponse(e.Value.([]string)[i]))
+		resp = append(resp, protocol.NewBulkStringResponse(list[i]))
 	}
 
 	return protocol.NewArrayResponse(resp)
