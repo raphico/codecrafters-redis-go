@@ -25,6 +25,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `GET <key>`                   | Retrieves value for `key`, or nil if it doesn’t exist                                                                   |
 | `DEL <key> [key ...]`         | Deletes one or more the key-value pairs                                                                                 |
 | `INCR <key>`                  | Increments an integer value (creates it if missing, starts at 0)                                                        |
+| `DECR <key>`                  | Decrements an integer value (creates it if missing, starts at -1)                                                       |
 | `MULTI`                       | Begins transaction mode, queues following commands                                                                      |
 | `EXEC`                        | Executes queued transaction commands                                                                                    |
 | `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                                                 |

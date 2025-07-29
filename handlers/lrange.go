@@ -8,7 +8,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
-func HandleLRANGE(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleLrange(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 3 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'lrange' command")
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
-func HandleLLEN(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleLlen(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 1 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'llen' command")
 	}

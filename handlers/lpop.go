@@ -8,7 +8,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
-func HandleLPOP(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleLpop(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 1 && len(r.Args) != 2 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'lpop' command")
 	}

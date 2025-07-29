@@ -8,7 +8,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleBLPOP(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleBlpop(s *session.Session, r *protocol.Request) protocol.Response {
 	argsLen := len(r.Args)
 
 	if argsLen != 2 {
@@ -18,7 +18,7 @@ func HandleBLPOP(s *session.Session, r *protocol.Request) protocol.Response {
 	key := r.Args[0]
 
 	if _, err := s.Store.Get(key); err == nil {
-		resp := HandleLPOP(s, &protocol.Request{Command: "LPOP", Args: []string{key}})
+		resp := HandleLpop(s, &protocol.Request{Command: "LPOP", Args: []string{key}})
 		if resp.Type != protocol.NullBulkStringType {
 			return protocol.NewArrayResponse([]protocol.Response{
 				protocol.NewBulkStringResponse(key),
@@ -42,14 +42,14 @@ func HandleBLPOP(s *session.Session, r *protocol.Request) protocol.Response {
 		<-popSignalChan
 		return protocol.NewArrayResponse([]protocol.Response{
 			protocol.NewBulkStringResponse(key),
-			HandleLPOP(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
+			HandleLpop(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
 		})
 	} else {
 		select {
 		case <-popSignalChan:
 			return protocol.NewArrayResponse([]protocol.Response{
 				protocol.NewBulkStringResponse(key),
-				HandleLPOP(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
+				HandleLpop(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
 			})
 		case <-time.After(timeout):
 			return protocol.NewNullBulkStringResponse()

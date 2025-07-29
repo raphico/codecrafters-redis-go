@@ -5,7 +5,7 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/session"
 )
 
-func HandleDEL(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleDel(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) == 0 {
 		return protocol.NewErrorResponse("wrong number of arguments for 'del' command")
 	}

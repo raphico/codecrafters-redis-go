@@ -8,17 +8,17 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
-func HandleIncr(s *session.Session, r *protocol.Request) protocol.Response {
+func HandleDecr(s *session.Session, r *protocol.Request) protocol.Response {
 	if len(r.Args) != 1 {
-		return protocol.NewErrorResponse("wrong number of arguments for 'incr' command")
+		return protocol.NewErrorResponse("wrong number of arguments for 'decr' command")
 	}
 
 	key := r.Args[0]
 
 	e, err := s.Store.Get(key)
 	if err != nil {
-		s.Store.Set(key, store.StringType, "1", nil)
-		return protocol.NewIntegerResponse(1)
+		s.Store.Set(key, store.StringType, "-1", nil)
+		return protocol.NewIntegerResponse(-1)
 	}
 
 	if e.Kind != store.StringType {
@@ -35,6 +35,6 @@ func HandleIncr(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("value is not an integer or out of range")
 	}
 
-	s.Store.Update(key, strconv.Itoa(curr+1))
-	return protocol.NewIntegerResponse(curr + 1)
+	s.Store.Update(key, strconv.Itoa(curr-1))
+	return protocol.NewIntegerResponse(curr - 1)
 }
