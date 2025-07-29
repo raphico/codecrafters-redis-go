@@ -38,13 +38,21 @@ func HandleBLPOP(s *session.Session, r *protocol.Request) protocol.Response {
 
 	s.Store.RegisterListWaiter(key, popSignalChan)
 
-	select {
-	case <-popSignalChan:
+	if timeout == 0 {
+		<-popSignalChan
 		return protocol.NewArrayResponse([]protocol.Response{
 			protocol.NewBulkStringResponse(key),
 			HandleLPOP(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
 		})
-	case <-time.After(timeout):
-		return protocol.NewNullBulkStringResponse()
+	} else {
+		select {
+		case <-popSignalChan:
+			return protocol.NewArrayResponse([]protocol.Response{
+				protocol.NewBulkStringResponse(key),
+				HandleLPOP(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
+			})
+		case <-time.After(timeout):
+			return protocol.NewNullBulkStringResponse()
+		}
 	}
 }

@@ -44,9 +44,7 @@ func (s *Store) Get(key string) (*Entry, error) {
 }
 
 func (s *Store) Set(key string, kind EntryType, value any, ttl *time.Duration) {
-	// blocks all other writers and readers
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
 	var exp *time.Time
 	if ttl != nil {
@@ -55,7 +53,14 @@ func (s *Store) Set(key string, kind EntryType, value any, ttl *time.Duration) {
 	}
 
 	s.data[key] = Entry{Value: value, Kind: kind, ExpiryTime: exp}
-	s.notifyListWaiter(kind, key)
+	s.mu.Unlock()
+
+	if ch := s.notifyListWaiter(kind, key); ch != nil {
+		select {
+		case ch <- true:
+		default:
+		}
+	}
 }
 
 func (s *Store) Update(key string, value any) error {
@@ -108,9 +113,9 @@ func (s *Store) RegisterListWaiter(key string, ch chan bool) {
 	s.listWaitChans[key] = append(s.listWaitChans[key], ch)
 }
 
-func (s *Store) notifyListWaiter(kind EntryType, key string) {
+func (s *Store) notifyListWaiter(kind EntryType, key string) chan bool {
 	if kind != ListType {
-		return
+		return nil
 	}
 
 	s.mu.Lock()
@@ -118,20 +123,15 @@ func (s *Store) notifyListWaiter(kind EntryType, key string) {
 
 	waiters, ok := s.listWaitChans[key]
 	if !ok || len(waiters) == 0 {
-		return
+		return nil
 	}
 
 	waiterChan := waiters[0]
-
 	if len(waiters) == 1 {
 		delete(s.listWaitChans, key)
 	} else {
 		s.listWaitChans[key] = waiters[1:]
 	}
 
-	select {
-	case waiterChan <- true:
-	default:
-		// If the channel is full (e.g., waiter timed out), do nothing
-	}
+	return waiterChan
 }
