@@ -1,4 +1,4 @@
-# 🧠 Build Your Own Redis in Go (from Scratch)
+# Build Your Own Redis in Go (from Scratch)
 
 A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, and persistence.
 
@@ -50,7 +50,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Aborting transactions via `DISCARD`
 - Dirty flag detection for invalid commands within a transaction
 
-## Persistence
+### Persistence
 
 - Loads data from RDB snapshot on startup
 - Configurable file location via dbfilename and dir
@@ -63,8 +63,6 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 These are on the roadmap or part of the extended challenge, but **not yet implemented**:
 
 - ❌ **Advanced data types**: Lists, Streams
-- ❌ **Replication** (leader-follower sync, `PSYNC`, `INFO`)
-- ❌ **WAIT, ACK, INFO replica behavior**
 
 ## How to Run
 
