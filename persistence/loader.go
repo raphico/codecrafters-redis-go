@@ -11,6 +11,16 @@ import (
 	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
+const (
+	OpcodeSelectDB     = 0xFE // Marks the start of a DB section
+	OpcodeResizeDB     = 0xFB // Indicates hash table size info follows
+	OpcodeAuxField     = 0xFA // Metadata field (key/value)
+	OpcodeEOF          = 0xFF // End of file
+	OpcodeExpiryMillis = 0xFC // Expiry in milliseconds
+	OpcodeExpirySecs   = 0xFD // Expiry in seconds
+	ValueTypeString    = 0x00 // Type marker for plain string key/value
+)
+
 func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 	file, err := os.Open(cfg.GetRDBPath())
 	if err != nil {
@@ -42,7 +52,7 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 			return err
 		}
 
-		if b == 0xFE {
+		if b == OpcodeSelectDB {
 			break
 		}
 	}
@@ -57,7 +67,7 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 	if err != nil {
 		return err
 	}
-	if b[0] == 0xFB {
+	if b[0] == OpcodeResizeDB {
 		reader.ReadByte()
 		if _, err := readLengthEncoded(reader); err != nil {
 			return err
@@ -75,12 +85,12 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 		}
 
 		// EOF / start of a new database subsection
-		if b == 0xFE || b == 0xFF {
+		if b == OpcodeSelectDB || b == OpcodeEOF {
 			break
 		}
 
 		// only handle strings
-		if b != 0x00 {
+		if b != ValueTypeString {
 			return fmt.Errorf("unsupported type: 0x%X", b)
 		}
 
