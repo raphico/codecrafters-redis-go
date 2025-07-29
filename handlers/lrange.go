@@ -59,6 +59,10 @@ func HandleLRANGE(s *session.Session, r *protocol.Request) protocol.Response {
 		stop = 0
 	}
 
+	if stop >= length {
+		stop = length - 1
+	}
+
 	if start > stop || start >= length {
 		return protocol.NewArrayResponse([]protocol.Response{})
 	}
