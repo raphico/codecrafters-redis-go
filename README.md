@@ -17,22 +17,23 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 
 ### Commands
 
-| Command                       | Description                                                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------------- |
-| `PING`                        | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`)                     |
-| `ECHO <msg>`                  | Returns the exact message sent                                                               |
-| `SET <key> <val>`             | Stores `val` under `key`, overwrites if it exists                                            |
-| `GET <key>`                   | Retrieves value for `key`, or nil if it doesn’t exist                                        |
-| `INCR <key>`                  | Increments an integer value (creates it if missing, starts at 0)                             |
-| `MULTI`                       | Begins transaction mode, queues following commands                                           |
-| `EXEC`                        | Executes queued transaction commands                                                         |
-| `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                      |
-| `CONFIG GET`                  | Returns RDB config like filename and directory                                               |
-| `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                          |
-| `LPUSH <key> <val> [val ...]` | Prepends value(s) to the start of the list at `key` (creates list if it doesn’t exist)       |
-| `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices) |
-| `LLEN <key>`                  | Returns the length of the list stored at `key`                                               |
-| `LPOP  <key>`                 | Removes and returns the first element of the list at `key`                                   |
+| Command                       | Description                                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `PING`                        | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`)                                                |
+| `ECHO <msg>`                  | Returns the exact message sent                                                                                          |
+| `SET <key> <val>`             | Stores `val` under `key`, overwrites if it exists                                                                       |
+| `GET <key>`                   | Retrieves value for `key`, or nil if it doesn’t exist                                                                   |
+| `INCR <key>`                  | Increments an integer value (creates it if missing, starts at 0)                                                        |
+| `MULTI`                       | Begins transaction mode, queues following commands                                                                      |
+| `EXEC`                        | Executes queued transaction commands                                                                                    |
+| `KEYS <pattern>`              | Returns all keys matching glob-style pattern (`*`, etc)                                                                 |
+| `CONFIG GET`                  | Returns RDB config like filename and directory                                                                          |
+| `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                                                     |
+| `LPUSH <key> <val> [val ...]` | Prepends value(s) to the start of the list at `key` (creates list if it doesn’t exist)                                  |
+| `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices)                            |
+| `LLEN <key>`                  | Returns the length of the list stored at `key`                                                                          |
+| `LPOP  <key>`                 | Removes and returns the first element of the list at `key`                                                              |
+| `BLPOP key timeout`           | Removes and returns the first element of the list at the given key, block if empty until a timeout or new data arrives. |
 
 ### Concurrency & Networking
 

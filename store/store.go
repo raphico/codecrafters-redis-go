@@ -6,16 +6,20 @@ import (
 	"time"
 )
 
+type ListWaitChans map[string][]chan bool
+
 type Store struct {
 	// to safely protect shared data from race conditions or crashes
 	mu sync.RWMutex
 
-	data map[string]Entry
+	data          map[string]Entry
+	listWaitChans ListWaitChans
 }
 
 func NewStore() *Store {
 	return &Store{
-		data: make(map[string]Entry),
+		data:          make(map[string]Entry),
+		listWaitChans: make(ListWaitChans),
 	}
 }
 
@@ -51,6 +55,7 @@ func (s *Store) Set(key string, kind EntryType, value any, ttl *time.Duration) {
 	}
 
 	s.data[key] = Entry{Value: value, Kind: kind, ExpiryTime: exp}
+	s.notifyListWaiter(kind, key)
 }
 
 func (s *Store) Update(key string, value any) error {
@@ -94,4 +99,39 @@ func (s *Store) Keys() []string {
 	}
 
 	return keys
+}
+
+func (s *Store) RegisterListWaiter(key string, ch chan bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.listWaitChans[key] = append(s.listWaitChans[key], ch)
+}
+
+func (s *Store) notifyListWaiter(kind EntryType, key string) {
+	if kind != ListType {
+		return
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	waiters, ok := s.listWaitChans[key]
+	if !ok || len(waiters) == 0 {
+		return
+	}
+
+	waiterChan := waiters[0]
+
+	if len(waiters) == 1 {
+		delete(s.listWaitChans, key)
+	} else {
+		s.listWaitChans[key] = waiters[1:]
+	}
+
+	select {
+	case waiterChan <- true:
+	default:
+		// If the channel is full (e.g., waiter timed out), do nothing
+	}
 }
