@@ -1,31 +1,33 @@
 # 🧠 Build Your Own Redis in Go (from Scratch)
 
-A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, replication, and persistence.
+A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, and persistence.
 
 > 🚀 Zero dependencies. Just Go, sockets, and deep protocol understanding.
 
-## 🎯 Goals
+## Goals
 
 - Understand and implement the Redis protocol (RESP)
 - Build a robust, concurrent TCP server from scratch
 - Reproduce core Redis functionality (PING, ECHO, SET, GET, INCR, etc.)
-- Handle complex features like transactions, replication, and RDB persistence
+- Implement advanced Redis data types like Lists and Streams
+- Handle complex features like transactions and RDB persistence
 - Strengthen skills in concurrency, systems design, and Go internals
 
 ## Implemented Features
 
-### Core Commands
+### Commands
 
-| Command           | Description                          |
-| ----------------- | ------------------------------------ |
-| `PING`            | Returns `PONG` or a custom message   |
-| `ECHO <msg>`      | Echoes back the provided message     |
-| `SET <key> <val>` | Stores a value under a key           |
-| `GET <key>`       | Retrieves the value for a key        |
-| `INCR <key>`      | Increments integer value of key      |
-| `MULTI`           | Starts a transaction block           |
-| `EXEC`            | Executes queued transaction commands |
-| `DISCARD`         | Cancels a queued transaction         |
+| Command           | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `PING`            | Returns `PONG` or a custom message                            |
+| `ECHO <msg>`      | Echoes back the provided message                              |
+| `SET <key> <val>` | Stores a value under a key                                    |
+| `GET <key>`       | Retrieves the value for a key                                 |
+| `INCR <key>`      | Increments integer value of key                               |
+| `MULTI`           | Starts a transaction block                                    |
+| `EXEC`            | Executes queued transaction commands                          |
+| `KEYS`            | Returns keys matching a give pattern                          |
+| `CONFIG`          | Returns RDB configuration parameters (filename and directory) |
 
 ### Concurrency & Networking
 
@@ -48,14 +50,21 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Aborting transactions via `DISCARD`
 - Dirty flag detection for invalid commands within a transaction
 
+## Persistence
+
+- Loads data from RDB snapshot on startup
+- Configurable file location via dbfilename and dir
+- Parses string keys and values from standard RDB format
+- Supports optional TTL and skips expired keys
+- Validates file structure and handles malformed input
+
 ## Not Yet Implemented
 
 These are on the roadmap or part of the extended challenge, but **not yet implemented**:
 
+- ❌ **Advanced data types**: Lists, Streams
 - ❌ **Replication** (leader-follower sync, `PSYNC`, `INFO`)
-- ❌ **Persistence** (RDB snapshot format, disk I/O)
 - ❌ **WAIT, ACK, INFO replica behavior**
-- ❌ **Advanced data types**: Lists, Sets, Streams
 
 ## How to Run
 
@@ -82,7 +91,11 @@ redis-cli PING
 
 ```bash
 ├── app/main.go                # Entry point, registers commands, starts server
+├── config/config.go           # Defines and validates configuration, such as RDB path
 ├── handlers/                  # Individual command handlers
+├── persistence/
+│   ├── load.go                # Handles restoring dataset from RDB file
+│   └── save.go                # Handles saving dataset to RDB file
 ├── protocol/
 │   ├── request.go             # Parses incoming RESP requests
 │   └── response.go            # Serializes and formats RESP responses
