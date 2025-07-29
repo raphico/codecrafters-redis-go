@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/codecrafters-io/redis-starter-go/protocol"
 	"github.com/codecrafters-io/redis-starter-go/session"
+	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 func HandleRPUSH(s *session.Session, r *protocol.Request) protocol.Response {
@@ -12,25 +13,24 @@ func HandleRPUSH(s *session.Session, r *protocol.Request) protocol.Response {
 
 	key, values := r.Args[0], r.Args[1:]
 
-	entry, err := s.Store.Get(key)
+	e, err := s.Store.Get(key)
 	if err != nil {
-		s.Store.Set(key, values, nil)
+		s.Store.Set(key, store.ListType, values, nil)
 		return protocol.NewIntegerResponse(len(values))
 	}
 
-	prev, ok := entry.Value.([]string)
-	if !ok {
+	if e.Kind != store.ListType {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
 	// Clone to avoid shared slice mutation
-	prevCopy := append([]string{}, prev...)
+	prevCopy := append([]string{}, e.Value.([]string)...)
 	curr := append(prevCopy, values...)
 
 	if err := s.Store.Update(key, curr); err != nil {
-		s.Store.Set(key, values, nil)
+		s.Store.Set(key, store.ListType, values, nil)
 		return protocol.NewIntegerResponse(len(values))
 	}
-	
+
 	return protocol.NewIntegerResponse(len(curr))
 }

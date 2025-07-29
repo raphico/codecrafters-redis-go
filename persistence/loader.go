@@ -22,7 +22,7 @@ const (
 	ValueTypeString    = 0x00 // Type marker for plain string key/value
 )
 
-func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
+func LoadRDB(cfg session.ConfigAccessor, st *store.Store) error {
 	file, err := os.Open(cfg.GetRDBPath())
 	if err != nil {
 		return err
@@ -141,9 +141,9 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 		}
 
 		if ttl != nil {
-			store.Set(key, value, ttl)
+			st.Set(key, store.StringType, value, ttl)
 		} else if !hasExpiry {
-			store.Set(key, value, nil)
+			st.Set(key, store.StringType, value, nil)
 		}
 
 		hasExpiry = false

@@ -5,23 +5,23 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/protocol"
 	"github.com/codecrafters-io/redis-starter-go/session"
+	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 func HandleIncr(s *session.Session, r *protocol.Request) protocol.Response {
 	key := r.Args[0]
 
-	e,  err := s.Store.Get(key)
+	e, err := s.Store.Get(key)
 	if err != nil {
-		s.Store.Set(key, "1", nil)
+		s.Store.Set(key, store.StringType, "1", nil)
 		return protocol.NewIntegerResponse(1)
 	}
 
-	value, ok := e.Value.(string)
-	if !ok {
+	if e.Kind != store.StringType {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
-	curr, err := strconv.Atoi(value)
+	curr, err := strconv.Atoi(e.Value.(string))
 	if err != nil {
 		return protocol.NewErrorResponse("value is not an integer or out of range")
 	}

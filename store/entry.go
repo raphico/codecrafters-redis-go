@@ -2,8 +2,16 @@ package store
 
 import "time"
 
+type EntryType int
+
+const (
+	StringType EntryType = iota
+	ListType
+)
+
 type Entry struct {
 	Value      any
+	Kind       EntryType
 	ExpiryTime *time.Time
 }
 

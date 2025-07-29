@@ -8,6 +8,7 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/protocol"
 	"github.com/codecrafters-io/redis-starter-go/session"
+	"github.com/codecrafters-io/redis-starter-go/store"
 )
 
 func HandleSet(s *session.Session, r *protocol.Request) protocol.Response {
@@ -17,7 +18,7 @@ func HandleSet(s *session.Session, r *protocol.Request) protocol.Response {
 
 	key, value := r.Args[0], r.Args[1]
 	if len(r.Args) == 2 {
-		s.Store.Set(key, value, nil)
+		s.Store.Set(key, store.StringType, value, nil)
 		return protocol.NewSimpleStringResponse("OK")
 	}
 
@@ -25,7 +26,7 @@ func HandleSet(s *session.Session, r *protocol.Request) protocol.Response {
 	ms, _ := strconv.Atoi(r.Args[3])
 	ttl := time.Duration(ms) * time.Millisecond
 
-	s.Store.Set(key, value, &ttl)
+	s.Store.Set(key, store.StringType, value, &ttl)
 
 	return protocol.NewSimpleStringResponse("OK")
 }

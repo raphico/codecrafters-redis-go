@@ -39,7 +39,7 @@ func (s *Store) Get(key string) (*Entry, error) {
 	return &e, nil
 }
 
-func (s *Store) Set(key string, value any, ttl *time.Duration) {
+func (s *Store) Set(key string, kind EntryType, value any, ttl *time.Duration) {
 	// blocks all other writers and readers
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -50,7 +50,7 @@ func (s *Store) Set(key string, value any, ttl *time.Duration) {
 		exp = &t
 	}
 
-	s.data[key] = Entry{Value: value, ExpiryTime: exp}
+	s.data[key] = Entry{Value: value, Kind: kind, ExpiryTime: exp}
 }
 
 func (s *Store) Update(key string, value any) error {
