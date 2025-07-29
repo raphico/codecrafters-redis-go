@@ -29,7 +29,7 @@ func HandleLPUSH(s *session.Session, r *protocol.Request) protocol.Response {
 
 	// Clone to avoid shared slice mutation
 	prevCopy := append([]string{}, e.Value.([]string)...)
-	curr := append(prevCopy, values...)
+	curr := append(values, prevCopy...)
 
 	if err := s.Store.Update(key, curr); err != nil {
 		s.Store.Set(key, store.ListType, values, nil)
