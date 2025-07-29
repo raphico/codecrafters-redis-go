@@ -79,23 +79,55 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 	}
 
 	// read database section
+	var ttl *time.Duration
 	for {
+		pb, err := reader.Peek(1)
+		if err != nil {
+			return err
+		}
+
+		if pb[0] == OpcodeEOF || pb[0] == OpcodeSelectDB {
+			break
+		}
+
+		if pb[0] == OpcodeExpiryMillis || pb[0] == OpcodeExpirySecs {
+			b, err := reader.ReadByte()
+			if err != nil {
+				return err
+			}
+
+			if b == OpcodeExpiryMillis {
+				//The expire timestamp is expressed in Unix time,
+				// stored as an 8-byte unsigned long, in little-endian
+				expiryBytes := make([]byte, 8)
+				if _, err := io.ReadFull(reader, expiryBytes); err != nil {
+					return err
+				}
+
+				expiryMillis := binary.LittleEndian.Uint64(expiryBytes)
+				ttl = computeTTL(int64(expiryMillis), true)
+			} else {
+				// The expire timestamp, expressed in Unix time,
+				// stored as an 4-byte unsigned integer, in little-endian
+				expiryBytes := make([]byte, 4)
+				if _, err := io.ReadFull(reader, expiryBytes); err != nil {
+					return err
+				}
+
+				expirySeconds := binary.LittleEndian.Uint32(expiryBytes)
+				ttl = computeTTL(int64(expirySeconds), false)
+			}
+		}
+
 		b, err := reader.ReadByte()
 		if err != nil {
 			return err
 		}
 
-		// EOF / start of a new database subsection
-		if b == OpcodeSelectDB || b == OpcodeEOF {
-			break
-		}
-
-		// only handle strings
 		if b != ValueTypeString {
 			return fmt.Errorf("unsupported type: 0x%X", b)
 		}
 
-		// start of a key value pair
 		key, err := readStringEncoded(reader)
 		if err != nil {
 			return err
@@ -106,46 +138,8 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 			return err
 		}
 
-		pb, err := reader.Peek(1)
-		if err != nil {
-			return err
-		}
-
-		if pb[0] != OpcodeExpiryMillis && pb[0] != OpcodeExpirySecs {
-			store.Set(key, value, nil)
-			continue
-		}
-		
-		b, err = reader.ReadByte()
-		if err != nil {
-			return err
-		}
-
-		if b == OpcodeExpiryMillis {
-			//The expire timestamp is expressed in Unix time,
-            // stored as an 8-byte unsigned long, in little-endian
-			expiryBytes := make([]byte, 8)
-			if _, err := io.ReadFull(reader, expiryBytes); err != nil {
-				return err
-			}
-
-			expiryMillis := binary.LittleEndian.Uint64(expiryBytes)
-			ttl := computeTTL(int64(expiryMillis), true)
-
-			store.Set(key, value, ttl)
-		}
-
-		// The expire timestamp, expressed in Unix time,
-        // stored as an 4-byte unsigned integer, in little-endian
-		expiryBytes := make([]byte, 4)
-		if _, err := io.ReadFull(reader, expiryBytes); err != nil {
-			return err
-		}
-
-		expirySeconds := binary.LittleEndian.Uint32(expiryBytes)
-		ttl := computeTTL(int64(expirySeconds), false)
-
 		store.Set(key, value, ttl)
+		ttl = nil
 	}
 
 	return nil
