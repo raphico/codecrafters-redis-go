@@ -43,7 +43,7 @@ func HandleLpop(s *session.Session, r *protocol.Request) protocol.Response {
 
 	list, ok := e.Value.([]string)
 	if !ok {
-		panic("value has wrong type")
+		panic("unexpected type: value is not a list")
 	}
 
 	if count > len(list) {

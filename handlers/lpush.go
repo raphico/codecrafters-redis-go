@@ -27,8 +27,13 @@ func HandleLpush(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
+	list, ok := e.Value.([]string)
+	if !ok {
+		panic("unexpected type: value is not a list")
+	}
+
 	// Clone to avoid shared slice mutation
-	prevCopy := append([]string{}, e.Value.([]string)...)
+	prevCopy := append([]string{}, list...)
 	curr := append(values, prevCopy...)
 
 	if err := s.Store.Update(key, curr); err != nil {

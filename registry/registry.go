@@ -54,7 +54,7 @@ func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 func (reg *Registry) RunAndReturnResponse(s *session.Session, r *protocol.Request) protocol.Response {
 	handler, ok := reg.handlers[canonical(r.Command)]
 	if !ok {
-		panic("All queued commands should be valid")
+		panic("unexpected error: all queued commands should be valid")
 	}
 
 	return handler(s, r)

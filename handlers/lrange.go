@@ -36,7 +36,7 @@ func HandleLrange(s *session.Session, r *protocol.Request) protocol.Response {
 
 	list, ok := e.Value.([]string)
 	if !ok {
-		panic("list is corrupted")
+		panic("unexpected type: value is not a list")
 	}
 
 	length := len(list)

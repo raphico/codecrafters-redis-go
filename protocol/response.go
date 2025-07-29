@@ -49,7 +49,7 @@ func (r Response) Serialize() string {
 		str := r.Value.(string)
 		return fmt.Sprintf("$%d\r\n%s\r\n", len(str), r.Value)
 	default:
-		panic("Invalid response type")
+		panic("unexpected type: invalid response type")
 	}
 }
 

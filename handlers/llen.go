@@ -22,5 +22,10 @@ func HandleLlen(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
-	return protocol.NewIntegerResponse(len(e.Value.([]string)))
+	list, ok := e.Value.([]string)
+	if !ok {
+		panic("unexpected type: value is not a list")
+	}
+
+	return protocol.NewIntegerResponse(len(list))
 }
