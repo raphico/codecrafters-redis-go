@@ -34,6 +34,11 @@ func HandleLRANGE(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
 
+	length := len(e.Value.([]string))
+	if stop >= length {
+		stop = length - 1
+	}
+
 	var resp []protocol.Response
 	for i := start; i <= stop; i++ {
 		resp = append(resp, protocol.NewBulkStringResponse(e.Value.([]string)[i]))
