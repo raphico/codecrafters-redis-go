@@ -46,6 +46,7 @@ func main() {
 	registry.Add("RPUSH", handlers.HandleRPUSH)
 	registry.Add("LPUSH", handlers.HandleLPUSH)
 	registry.Add("LRANGE", handlers.HandleLRANGE)
+	registry.Add("LLEN", handlers.HandleLLEN)
 
 	err = s.Start()
 	if err != nil {

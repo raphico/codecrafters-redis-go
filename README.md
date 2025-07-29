@@ -18,7 +18,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 ### Commands
 
 | Command                       | Description                                                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| ----------------------------- | -------------------------------------------------------------------------------------------- | --- |
 | `PING`                        | Returns `PONG`, or a custom message if provided (`PING hello` → `hello`)                     |
 | `ECHO <msg>`                  | Returns the exact message sent                                                               |
 | `SET <key> <val>`             | Stores `val` under `key`, overwrites if it exists                                            |
@@ -31,6 +31,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `RPUSH <key> <val> [val...]`  | Appends value(s) to list at `key`, creates list if it doesn’t exist                          |
 | `LPUSH <key> <val> [val ...]` | Prepends value(s) to the start of the list at `key` (creates list if it doesn’t exist)       |
 | `LRANGE <key> <start> <stop>` | Returns elements in the list from index start to stop (inclusive, supports negative indices) |
+| `LLEN <key>`                  | Returns the length of the list at `key`                                                      |     |
 
 ### Concurrency & Networking
 
