@@ -7,6 +7,7 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/handlers"
+	"github.com/codecrafters-io/redis-starter-go/persistence"
 	"github.com/codecrafters-io/redis-starter-go/registry"
 	"github.com/codecrafters-io/redis-starter-go/server"
 	"github.com/codecrafters-io/redis-starter-go/store"
@@ -20,11 +21,15 @@ func main() {
 
 	flag.Parse()
 
-	config := config.NewConfig(*dbfilename, *dir)
-
 	registry := registry.New()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	store := store.NewStore()
+
+	config, err := config.NewConfig(*dbfilename, *dir)
+	if err == nil {
+		persistence.LoadRDB(config, store)
+	}
+
 	s := server.New(port, logger, registry, store, config)
 
 	registry.Add("SET", handlers.HandleSet)
@@ -36,9 +41,10 @@ func main() {
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
 	registry.Add("CONFIG", handlers.HandleConfig)
+	registry.Add("SAVE", handlers.HandleSave)
 	registry.Add("KEYS", handlers.HandleKeys)
 
-	err := s.Start()
+	err = s.Start()
 	if err != nil {
 		logger.Error(err.Error())
 		return

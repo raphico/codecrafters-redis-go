@@ -4,4 +4,5 @@ package session
 // This ensures session depends only on behavior, not concrete types, avoiding import cycles
 type ConfigAccessor interface {
 	GetConfig() map[string]string
+	GetRDBPath() string
 }
