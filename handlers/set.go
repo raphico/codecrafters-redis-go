@@ -22,9 +22,15 @@ func HandleSet(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewSimpleStringResponse("OK")
 	}
 
-	// this is already checked in isSetArgsValid
-	ms, _ := strconv.Atoi(r.Args[3])
-	ttl := time.Duration(ms) * time.Millisecond
+	flag := strings.ToUpper(r.Args[2])
+	expiryMs, _ := strconv.Atoi(r.Args[3]) // already validated in isSetArgsValid
+
+	var ttl time.Duration
+	if flag == "PX" {
+		ttl = time.Duration(expiryMs) * time.Millisecond
+	} else { // EX
+		ttl = time.Duration(expiryMs) * time.Second
+	}
 
 	s.Store.Set(key, store.StringType, value, &ttl)
 
@@ -40,31 +46,17 @@ func isSetArgsValid(args []string) bool {
 		return true
 	}
 
-	seenFlags := args[:2]
+	if len(args) != 4 {
+		return false
+	}
 
-	i := 2
-	for i < len(args) {
-		arg := strings.ToUpper(args[i])
+	flag := strings.ToUpper(args[2])
+	if !slices.Contains([]string{"PX", "EX"}, flag) {
+		return false
+	}
 
-		if arg == "PX" {
-			if i+1 > len(args) {
-				return false
-			}
-
-			if slices.Contains(seenFlags, arg) {
-				return false
-			}
-
-			seenFlags = append(seenFlags, arg)
-
-			if _, err := strconv.Atoi(args[i+1]); err != nil {
-				return false
-			}
-
-			i += 2
-		} else {
-			return false
-		}
+	if _, err := strconv.Atoi(args[3]); err != nil {
+		return false
 	}
 
 	return true
