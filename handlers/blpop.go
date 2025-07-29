@@ -32,7 +32,7 @@ func HandleBLPOP(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("timeout is not a float or out of range")
 	}
 
-	timeout := time.Duration(timeoutFloat) * time.Second
+	timeout := time.Duration(timeoutFloat * float64(time.Second)) 
 
 	popSignalChan := make(chan bool)
 
