@@ -38,6 +38,7 @@ func main() {
 	registry.Add("PING", handlers.HandlePing)
 	registry.Add("INCR", handlers.HandleIncr)
 	registry.Add("DECR", handlers.HandleDecr)
+	registry.Add("EXISTS", handlers.HandleExists)
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
