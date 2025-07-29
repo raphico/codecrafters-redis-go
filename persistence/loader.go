@@ -80,6 +80,7 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 
 	// read database section
 	var ttl *time.Duration
+	hasExpiry := false
 	for {
 		pb, err := reader.Peek(1)
 		if err != nil {
@@ -95,7 +96,6 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 			if err != nil {
 				return err
 			}
-
 			if b == OpcodeExpiryMillis {
 				//The expire timestamp is expressed in Unix time,
 				// stored as an 8-byte unsigned long, in little-endian
@@ -117,6 +117,8 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 				expirySeconds := binary.LittleEndian.Uint32(expiryBytes)
 				ttl = computeTTL(int64(expirySeconds), false)
 			}
+
+			hasExpiry = true
 		}
 
 		b, err := reader.ReadByte()
@@ -140,7 +142,11 @@ func LoadRDB(cfg session.ConfigAccessor, store *store.Store) error {
 
 		if ttl != nil {
 			store.Set(key, value, ttl)
+		} else if !hasExpiry {
+			store.Set(key, value, nil)
 		}
+
+		hasExpiry = false
 		ttl = nil
 	}
 
