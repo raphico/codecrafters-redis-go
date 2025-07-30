@@ -32,21 +32,26 @@ func main() {
 
 	s := server.New(port, logger, registry, store, config)
 
-	registry.Add("SET", handlers.HandleSet)
-	registry.Add("GET", handlers.HandleGet)
 	registry.Add("ECHO", handlers.HandleEcho)
 	registry.Add("PING", handlers.HandlePing)
+
+	registry.Add("SET", handlers.HandleSet)
+	registry.Add("GET", handlers.HandleGet)
 	registry.Add("INCR", handlers.HandleIncr)
 	registry.Add("DECR", handlers.HandleDecr)
+	registry.Add("DEL", handlers.HandleDel)
 	registry.Add("EXISTS", handlers.HandleExists)
 	registry.Add("TYPE", handlers.HandleType)
 	registry.Add("TTL", handlers.HandleTtl)
+	registry.Add("KEYS", handlers.HandleKeys)
+
 	registry.Add("MULTI", handlers.HandleMulti)
 	registry.Add("EXEC", handlers.MakeExecHandler(registry))
 	registry.Add("DISCARD", handlers.HandleDiscard)
-	registry.Add("CONFIG", handlers.HandleConfig)
+
 	registry.Add("SAVE", handlers.HandleSave)
-	registry.Add("KEYS", handlers.HandleKeys)
+	registry.Add("CONFIG", handlers.HandleConfig)
+
 	registry.Add("RPUSH", handlers.HandleRpush)
 	registry.Add("LPUSH", handlers.HandleLpush)
 	registry.Add("LRANGE", handlers.HandleLrange)
@@ -54,7 +59,8 @@ func main() {
 	registry.Add("LPOP", handlers.HandleLpop)
 	registry.Add("RPOP", handlers.HandleRpop)
 	registry.Add("BLPOP", handlers.HandleBlpop)
-	registry.Add("DEL", handlers.HandleDel)
+
+	registry.Add("SUBSCRIBE", handlers.HandleSubscribe)
 
 	err = s.Start()
 	if err != nil {

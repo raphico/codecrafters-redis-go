@@ -34,7 +34,7 @@ func HandleBlpop(s *session.Session, r *protocol.Request) protocol.Response {
 
 	timeout := time.Duration(timeoutFloat * float64(time.Second))
 
-	popSignalChan := make(chan bool)
+	popSignalChan := make(chan struct{})
 
 	s.Store.RegisterListWaiter(key, popSignalChan)
 

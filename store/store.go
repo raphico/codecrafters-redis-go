@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ListWaitChans map[string][]chan bool
+type ListWaitChans map[string][]chan struct{}
 
 type Store struct {
 	// to safely protect shared data from race conditions or crashes
@@ -57,7 +57,7 @@ func (s *Store) Set(key string, kind EntryType, value any, ttl *time.Duration) {
 
 	if ch := s.notifyListWaiter(kind, key); ch != nil {
 		select {
-		case ch <- true:
+		case ch <- struct{}{}:
 		default:
 		}
 	}
@@ -112,14 +112,14 @@ func (s *Store) Keys() []string {
 	return keys
 }
 
-func (s *Store) RegisterListWaiter(key string, ch chan bool) {
+func (s *Store) RegisterListWaiter(key string, ch chan struct{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.listWaitChans[key] = append(s.listWaitChans[key], ch)
 }
 
-func (s *Store) notifyListWaiter(kind EntryType, key string) chan bool {
+func (s *Store) notifyListWaiter(kind EntryType, key string) chan struct{} {
 	if kind != ListType {
 		return nil
 	}

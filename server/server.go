@@ -8,6 +8,7 @@ import (
 
 	"github.com/codecrafters-io/redis-starter-go/config"
 	"github.com/codecrafters-io/redis-starter-go/protocol"
+	"github.com/codecrafters-io/redis-starter-go/pubsub"
 	"github.com/codecrafters-io/redis-starter-go/registry"
 	"github.com/codecrafters-io/redis-starter-go/session"
 	"github.com/codecrafters-io/redis-starter-go/store"
@@ -49,17 +50,19 @@ func (s *Server) Start() error {
 
 	s.logger.Info(fmt.Sprintf("Redis server running on port %s", s.port))
 
+	pubsubManager := pubsub.NewPubSubManager()
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			return fmt.Errorf("error accepting connection: %w", err)
 		}
 
-		go s.handleConnection(conn)
+		go s.handleConnection(conn, pubsubManager)
 	}
 }
 
-func (s *Server) handleConnection(conn net.Conn) {
+func (s *Server) handleConnection(conn net.Conn, pubsubManager *pubsub.PubsubManager) {
 	addr := conn.RemoteAddr().String()
 	s.logger.Info("new client connected", "addr", addr)
 
@@ -69,7 +72,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 	}()
 
 	reader := bufio.NewReader(conn)
-	session := session.NewSession(conn, s.store, s.config)
+	session := session.NewSession(conn, s.store, s.config, pubsubManager)
 
 	for {
 		request, err := protocol.ParseRequest(reader)

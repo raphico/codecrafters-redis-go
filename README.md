@@ -1,6 +1,6 @@
 # Build Your Own Redis in Go (from Scratch)
 
-A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, and persistence.
+A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, persistence, and PUB/SUB.
 
 > 🚀 Zero dependencies. Just Go, sockets, and deep protocol understanding.
 
@@ -9,8 +9,8 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Understand and implement the Redis protocol (RESP)
 - Build a robust, concurrent TCP server from scratch
 - Reproduce core Redis functionality (PING, ECHO, SET, GET, INCR, etc.)
-- Implement advanced Redis data types like Lists and Streams
-- Handle complex features like transactions and RDB persistence
+- Implement advanced Redis data types like Lists
+- Handle complex features like transactions, RDB persistence, and PUB/SUB
 - Strengthen skills in concurrency, systems design, and Go internals
 
 ## Implemented Features
@@ -40,6 +40,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `LPOP  <key>`                                  | Removes and returns the first element of the list at `key`                                                              |
 | `RPOP  <key>`                                  | Removes and returns the last element of the list at `key`                                                               |
 | `BLPOP key timeout`                            | Removes and returns the first element of the list at the given key, block if empty until a timeout or new data arrives. |
+| `SUBSCRIBE <channel>`                          | registers a client as a subscriber to `channel`                                                                         |
 
 ### Concurrency & Networking
 
@@ -70,11 +71,9 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Supports optional TTL and skips expired keys
 - Validates file structure and handles malformed input
 
-## Not Yet Implemented
+## In Progress
 
-These are on the roadmap or part of the extended challenge, but **not yet implemented**:
-
-- ❌ **Advanced data types**: Streams
+- PUB/SUB
 
 ## How to Run
 
@@ -109,6 +108,7 @@ redis-cli PING
 ├── protocol/
 │   ├── request.go             # Parses incoming RESP requests
 │   └── response.go            # Serializes and formats RESP responses
+├── pubsub/pubsub.go           # Defines a message broker
 ├── registry/registry.go       # Dispatches commands to handlers
 ├── server/server.go           # TCP server, handles concurrent clients
 ├── session/
