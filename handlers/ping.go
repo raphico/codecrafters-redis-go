@@ -16,7 +16,7 @@ func HandlePing(s *session.Session, r *protocol.Request) protocol.Response {
 			msg = r.Args[0]
 		}
 		return protocol.NewArrayResponse([]protocol.Response{
-			protocol.NewBulkStringResponse("PONG"),
+			protocol.NewBulkStringResponse("pong"),
 			protocol.NewBulkStringResponse(msg),
 		})
 	}
