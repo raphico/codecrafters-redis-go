@@ -34,9 +34,25 @@ func HandleBlpop(s *session.Session, r *protocol.Request) protocol.Response {
 
 	timeout := time.Duration(timeoutFloat * float64(time.Second))
 
-	popSignalChan := make(chan struct{})
+	// a buffered channel to prevent deadlock even if the client already timed out or disconnected
+	popSignalChan := make(chan struct{}, 1)
 
 	s.Store.RegisterListWaiter(key, popSignalChan)
+
+	// recheck the list before waiting
+	if entry, err := s.Store.Get(key); err == nil {
+		if list, ok := entry.Value.([]string); ok && len(list) > 0 {
+			// clear a signal that might have been sent by RPUSH
+			select {
+			case <-popSignalChan:
+			default:
+			}
+			return protocol.NewArrayResponse([]protocol.Response{
+				protocol.NewBulkStringResponse(key),
+				HandleLpop(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
+			})
+		}
+	}
 
 	if timeout == 0 {
 		<-popSignalChan
@@ -52,7 +68,7 @@ func HandleBlpop(s *session.Session, r *protocol.Request) protocol.Response {
 				HandleLpop(s, &protocol.Request{Command: "LPOP", Args: []string{key}}),
 			})
 		case <-time.After(timeout):
-			return protocol.NewNullBulkStringResponse()
+			return protocol.NewNullArrayResponse()
 		}
 	}
 }

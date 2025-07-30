@@ -14,6 +14,7 @@ const (
 	BulkStringType
 	IntegerType
 	ArrayType
+	NullArrayType
 )
 
 type Response struct {
@@ -31,6 +32,8 @@ func (r Response) Serialize() string {
 		return fmt.Sprintf("+%s\r\n", r.Value)
 	case IntegerType:
 		return fmt.Sprintf(":%d\r\n", r.Value)
+	case NullArrayType:
+		return "*-1\r\n"
 	case ArrayType:
 		var builder strings.Builder
 		responses := r.Value.([]Response)
@@ -91,5 +94,11 @@ func NewArrayResponse(response []Response) Response {
 	return Response{
 		Type:  ArrayType,
 		Value: response,
+	}
+}
+
+func NewNullArrayResponse() Response {
+	return Response{
+		Type: NullArrayType,
 	}
 }
