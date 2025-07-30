@@ -39,7 +39,8 @@ func (reg *Registry) Add(command string, handler Handler) {
 
 func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
 	if s.InSubscribeMode() && !allowedInSubscribeMode[strings.ToUpper(r.Command)] {
-		s.SendResponse(protocol.NewErrorResponse("Can't execute 'echo': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context"))
+		err := fmt.Sprintf("Can't execute '%s': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context", canonical(r.Command))
+		s.SendResponse(protocol.NewErrorResponse(err))
 		return
 	}
 
