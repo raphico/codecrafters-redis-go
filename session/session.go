@@ -57,3 +57,13 @@ func (s *Session) InSubscribeMode() bool {
 func (s *Session) SendResponse(resp protocol.Response) {
 	fmt.Fprint(s.conn, resp.Serialize())
 }
+
+func (s *Session) SendMessage(channel, message string) {
+	response := protocol.NewArrayResponse([]protocol.Response{
+		protocol.NewBulkStringResponse("message"),
+		protocol.NewBulkStringResponse(channel),
+		protocol.NewBulkStringResponse(message),
+	})
+
+	s.SendResponse(response)
+}

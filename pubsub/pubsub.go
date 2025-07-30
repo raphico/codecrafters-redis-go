@@ -3,6 +3,7 @@ package pubsub
 import "sync"
 
 type subscriber interface {
+	SendMessage(channel, message string)
 	GetSessionID() string
 }
 
@@ -63,6 +64,10 @@ func (ps *PubsubManager) Publish(channel, message string) int {
 	subs, ok := ps.subscriptions[channel]
 	if !ok {
 		return 0
+	}
+
+	for sub := range subs {
+		sub.SendMessage(channel, message)
 	}
 
 	return len(subs)
