@@ -72,3 +72,31 @@ func (ps *PubsubManager) Publish(channel, message string) int {
 
 	return len(subs)
 }
+
+func (ps *PubsubManager) Unsubscribe(channel string, sub subscriber) int {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+
+	removed := 0
+
+	if subs, ok := ps.subscriptions[channel]; ok {
+		if _, subscribed := subs[sub]; subscribed {
+			delete(subs, sub)
+			removed = 1
+			if len(subs) == 0 {
+				delete(ps.subscriptions, channel)
+			}
+		}
+	}
+
+	if channels, ok := ps.subsByClient[sub]; ok {
+		if _, exists := channels[channel]; exists {
+			delete(channels, channel)
+			if len(channels) == 0 {
+				delete(ps.subsByClient, sub)
+			}
+		}
+	}
+
+	return removed
+}

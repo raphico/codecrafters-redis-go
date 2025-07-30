@@ -42,6 +42,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `BLPOP key timeout`                            | Removes and returns the first element of the list at the given key, block if empty until a timeout or new data arrives. |
 | `SUBSCRIBE <channel>`                          | registers a client as a subscriber to `channel`                                                                         |
 | `PUBLISH <channel> <message>`                  | delivers a message to all clients subscribed to a channel                                                               |
+| `UNSUBSCRIBE <channel>`                        | Unsubscribes a client from a channel                                                                                    |
 
 ### Concurrency & Networking
 
@@ -72,9 +73,12 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 - Supports optional TTL and skips expired keys
 - Validates file structure and handles malformed input
 
-## In Progress
+### PUB/SUB
 
-- PUB/SUB
+- SUBSCRIBE <channel> – Subscribe to a channel
+- Enter subscriber mode (only PUB/SUB commands allowed)
+- PUBLISH <channel> <message> – Send a message to all subscribers
+- UNSUBSCRIBE [channel] – Unsubscribe from a channel
 
 ## How to Run
 

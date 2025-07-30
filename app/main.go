@@ -62,6 +62,7 @@ func main() {
 
 	registry.Add("SUBSCRIBE", handlers.HandleSubscribe)
 	registry.Add("PUBLISH", handlers.HandlePublish)
+	registry.Add("UNSUBSCRIBE", handlers.HandleUnsubscribe)
 
 	err = s.Start()
 	if err != nil {
