@@ -49,6 +49,11 @@ func (s *Session) GetSessionID() string {
 	return s.ID
 }
 
+func (s *Session) InSubscribeMode() bool {
+	count := s.Pubsub.GetSubscribedCount(s)
+	return count > 0
+}
+
 func (s *Session) SendResponse(resp protocol.Response) {
 	fmt.Fprint(s.conn, resp.Serialize())
 }

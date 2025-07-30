@@ -14,6 +14,15 @@ type Registry struct {
 	handlers map[string]Handler
 }
 
+var allowedInSubscribeMode = map[string]bool{
+	"SUBSCRIBE":    true,
+	"UNSUBSCRIBE":  true,
+	"PSUBSCRIBE":   true,
+	"PUNSUBSCRIBE": true,
+	"PING":         true,
+	"QUIT":         true,
+}
+
 func New() *Registry {
 	return &Registry{
 		handlers: make(map[string]Handler),
@@ -29,6 +38,11 @@ func (reg *Registry) Add(command string, handler Handler) {
 }
 
 func (reg *Registry) Dispatch(s *session.Session, r *protocol.Request) {
+	if s.InSubscribeMode() && !allowedInSubscribeMode[strings.ToUpper(r.Command)] {
+		s.SendResponse(protocol.NewErrorResponse("Can't execute 'echo': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context"))
+		return
+	}
+
 	cmd := canonical(r.Command)
 	handler, ok := reg.handlers[cmd]
 
