@@ -10,10 +10,19 @@ func HandlePing(s *session.Session, r *protocol.Request) protocol.Response {
 		return protocol.NewErrorResponse("wrong number of arguments for 'ping' command")
 	}
 
-	if len(r.Args) == 1 {
-		msg := r.Args[0]
-		return protocol.NewSimpleStringResponse(msg)
+	if s.InSubscribeMode() {
+		var msg string
+		if len(r.Args) == 1 {
+			msg = r.Args[0]
+		}
+		return protocol.NewArrayResponse([]protocol.Response{
+			protocol.NewBulkStringResponse("PONG"),
+			protocol.NewBulkStringResponse(msg),
+		})
 	}
 
+	if len(r.Args) == 1 {
+		return protocol.NewSimpleStringResponse(r.Args[0])
+	}
 	return protocol.NewSimpleStringResponse("PONG")
 }
