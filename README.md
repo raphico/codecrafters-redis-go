@@ -41,6 +41,7 @@ A fully functional Redis clone built entirely from scratch using the Go standard
 | `RPOP  <key>`                                  | Removes and returns the last element of the list at `key`                                                               |
 | `BLPOP key timeout`                            | Removes and returns the first element of the list at the given key, block if empty until a timeout or new data arrives. |
 | `SUBSCRIBE <channel>`                          | registers a client as a subscriber to `channel`                                                                         |
+| `PUBLISH <channel> <message>`                  | delivers a message to all clients subscribed to a channel                                                               |
 
 ### Concurrency & Networking
 

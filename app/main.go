@@ -61,6 +61,7 @@ func main() {
 	registry.Add("BLPOP", handlers.HandleBlpop)
 
 	registry.Add("SUBSCRIBE", handlers.HandleSubscribe)
+	registry.Add("PUBLISH", handlers.HandlePublish)
 
 	err = s.Start()
 	if err != nil {

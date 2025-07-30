@@ -55,3 +55,15 @@ func (ps *PubsubManager) GetSubscribedCount(sub subscriber) int {
 
 	return len(channels)
 }
+
+func (ps *PubsubManager) Publish(channel, message string) int {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+
+	subs, ok := ps.subscriptions[channel]
+	if !ok {
+		return 0
+	}
+
+	return len(subs)
+}
