@@ -1,6 +1,6 @@
 # Build Your Own Redis in Go (from Scratch)
 
-A fully functional Redis clone built entirely from scratch using the Go standard library. Built as part of the [CodeCrafters "Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis), this project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, persistence, and PUB/SUB.
+A fully functional Redis clone built entirely from scratch using the Go standard library. This project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, persistence, and PUB/SUB.
 
 > 🚀 Zero dependencies. Just Go, sockets, and deep protocol understanding.
 
@@ -123,3 +123,8 @@ redis-cli PING
 │   ├── store.go               # Thread-safe key-value store
 │   └── entry.go               # Defines key-value pair with optional expiry
 ```
+
+## Try the challenge yourself
+
+This project was built as part of the [Codecrafters "Build Your Own HTTP Server" Challenge](https://app.codecrafters.io/r/zealous-guineapig-988263). Use my link to get **7 days free** if you want to take the challenge and build your own server from scratch.
+
