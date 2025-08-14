@@ -2,8 +2,6 @@
 
 A fully functional Redis clone built entirely from scratch using the Go standard library. This project explores core Redis features and systems programming concepts including RESP parsing, custom TCP servers, in-memory data storage, transactions, persistence, and PUB/SUB.
 
-> 🚀 Zero dependencies. Just Go, sockets, and deep protocol understanding.
-
 ## Goals
 
 - Understand and implement the Redis protocol (RESP)
@@ -124,7 +122,6 @@ redis-cli PING
 │   └── entry.go               # Defines key-value pair with optional expiry
 ```
 
-## Try the challenge yourself
+## Attribution
 
-This project was built as part of the [Codecrafters "Build Your Own HTTP Server" Challenge](https://app.codecrafters.io/r/zealous-guineapig-988263). Use my link to get **7 days free** if you want to take the challenge and build your own server from scratch.
-
+This project was built as part of the [Codecrafters "Build Your Own HTTP Server" Challenge](https://app.codecrafters.io/courses/redis/overview)
